@@ -17,8 +17,7 @@ export const METADATA = {
     "Devhermanos",
     "Portfolio",
   ].join(", "),
-  image:
-    "https://res.cloudinary.com/dywdhyojt/image/upload/v1721378510/social-preview.png",
+  image: "https://www.ayman.chabbaki.tech/preview.png",
   language: "French",
   themeColor: "#000000",
 };
