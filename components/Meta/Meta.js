@@ -39,21 +39,22 @@ const Meta = () => (
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="/logo.png"
+      href="/apple-icon-180x180.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="/logo.png"
+      href="/favicon-32x32.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="/logo.png"
+      href="/favicon-16x16.png"
     />
-    <link rel="shortcut icon" href="/logo.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="msapplication-TileColor" content="#7000FF" />
     <link rel="manifest" href="/manifest.json" />
   </Head>
