@@ -1,0 +1,38 @@
+.verticalEmail {
+  position: fixed;
+  left: 40px;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+
+  .emailLink {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    color: #a8b2d1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 10px;
+
+    &:hover {
+      color: #8b31ff;
+      transform: translateY(-5px);
+    }
+  }
+
+  .line {
+    width: 1px;
+    height: 90px;
+    background-color: #a8b2d1;
+    opacity: 0.6;
+  }
+}
