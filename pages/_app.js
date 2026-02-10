@@ -3,6 +3,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import Meta from "@/components/Meta/Meta";
 import AnalyticsTracker from "@/components/AnalyticsTracker/AnalyticsTracker";
 import "../styles/globals.scss";
+import { Analytics } from "@vercel/analytics/next"
 import { GTAG } from "constants";
 import { LanguageProvider } from "../contexts/LanguageContext";
 
@@ -16,6 +17,7 @@ const App = ({ Component, pageProps }) => {
         <Component {...pageProps} />
         <AnalyticsTracker />
         <GoogleAnalytics gaId={GTAG} />
+        <Analytics />
       </main>
     </LanguageProvider>
   );
