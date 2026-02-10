@@ -4,17 +4,10 @@ import Head from "next/head";
 
 const AnalyticsDashboard = () => {
   const [analytics, setAnalytics] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if already authenticated
-    const auth = sessionStorage.getItem("dashboardAuth");
-    if (auth === "authenticated") {
-      setIsAuthenticated(true);
-      loadAnalytics();
-    }
+    loadAnalytics();
     setLoading(false);
   }, []);
 
@@ -32,18 +25,6 @@ const AnalyticsDashboard = () => {
       totalInteractions: interactions.length,
       totalSessions: sessions.length,
     });
-  };
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // Simple password protection (in production, use proper authentication)
-    if (password === "ayman2024") {
-      sessionStorage.setItem("dashboardAuth", "authenticated");
-      setIsAuthenticated(true);
-      loadAnalytics();
-    } else {
-      alert("Incorrect password");
-    }
   };
 
   const getTopPages = () => {
@@ -135,40 +116,10 @@ const AnalyticsDashboard = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!analytics) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <Head>
-          <title>Analytics Dashboard - Protected</title>
-        </Head>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-900 p-8 rounded-lg shadow-2xl max-w-md w-full border border-indigo-light/20"
-        >
-          <h1 className="text-3xl font-bold text-white mb-6 text-center">
-            🔒 Analytics Dashboard
-          </h1>
-          <form onSubmit={handleLogin}>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-light mb-4"
-              autoFocus
-            />
-            <button
-              type="submit"
-              className="w-full px-4 py-3 bg-gradient-to-r from-indigo-light to-purple-500 text-white rounded-lg font-semibold hover:from-purple-500 hover:to-indigo-light transition-all duration-300"
-            >
-              Access Dashboard
-            </button>
-          </form>
-          <p className="text-gray-500 text-sm text-center mt-4">
-            Protected analytics page
-          </p>
-        </motion.div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-2xl">No analytics data available</div>
       </div>
     );
   }
