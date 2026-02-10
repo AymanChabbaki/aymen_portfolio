@@ -19,6 +19,10 @@ const Meta = () => (
     <meta property="og:title" content={METADATA.title} />
     <meta property="og:description" content={METADATA.description} />
     <meta property="og:image" content={METADATA.image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content={`${METADATA.author} - Portfolio Preview`} />
     <meta property="og:url" content={METADATA.siteUrl} />
     <meta property="og:site_name" content={METADATA.title} />
 
@@ -30,6 +34,7 @@ const Meta = () => (
     <meta name="twitter:creator" content={METADATA.twitterHandle} />
     <meta property="twitter:url" content={METADATA.siteUrl} />
     <meta property="twitter:image" content={METADATA.image} />
+    <meta property="twitter:image:alt" content={`${METADATA.author} - Portfolio Preview`} />
 
     <link
       rel="apple-touch-icon"

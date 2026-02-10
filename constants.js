@@ -3,7 +3,7 @@ export const METADATA = {
   title: "Portfolio | Ayman Chabbaki",
   description:
     "Passionné par le développement web et l'IA, je conçois des solutions numériques innovantes alliant performance, expérience utilisateur et valeur ajoutée. Full Stack Developer & AI Engineer.",
-  siteUrl: "https://www.ayman.chabbaki.tech/",
+  siteUrl: "https://ayman.chabbaki.tech/", // UPDATE THIS with your actual Vercel URL
   twitterHandle: "@aymen_exe777",
   keywords: [
     "Ayman Chabbaki",
@@ -17,7 +17,7 @@ export const METADATA = {
     "Devhermanos",
     "Portfolio",
   ].join(", "),
-  image: "https://www.ayman.chabbaki.tech/preview.png",
+  image: "https://ayman.chabbaki.tech/preview.png", // UPDATE THIS with your actual Vercel URL
   language: "French",
   themeColor: "#000000",
 };
