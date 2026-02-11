@@ -11,6 +11,10 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [timeRange, setTimeRange] = useState('7d');
   const [refreshing, setRefreshing] = useState(false);
+  const [realtimeData, setRealtimeData] = useState(null);
+  const [contactsData, setContactsData] = useState(null);
+  const [adminEmail] = useState('aymanchabbaki@gmail.com'); // Admin email
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,6 +34,8 @@ const Dashboard = () => {
         setIsAuthenticated(true);
         sessionStorage.setItem('dashboard_auth', 'true');
         fetchStats();
+        fetchRealtimeData();
+        fetchContactsData();
       } else {
         setError('Invalid password');
       }
@@ -53,17 +59,58 @@ const Dashboard = () => {
     }
   };
 
+  const fetchRealtimeData = async () => {
+    try {
+      const response = await fetch('/api/analytics/realtime');
+      const data = await response.json();
+      setRealtimeData(data);
+    } catch (err) {
+      console.error('Failed to fetch realtime data:', err);
+    }
+  };
+
+  const fetchContactsData = async () => {
+    try {
+      const response = await fetch(`/api/analytics/contacts?timeRange=${timeRange}`);
+      const data = await response.json();
+      setContactsData(data);
+    } catch (err) {
+      console.error('Failed to fetch contacts data:', err);
+    }
+  };
+
+  const exportData = () => {
+    const exportObj = {
+      stats,
+      realtimeData,
+      contactsData,
+      exportedAt: new Date().toISOString(),
+      timeRange
+    };
+    const dataStr = JSON.stringify(exportObj, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analytics-export-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     const isAuth = sessionStorage.getItem('dashboard_auth');
     if (isAuth === 'true') {
       setIsAuthenticated(true);
       fetchStats();
+      fetchRealtimeData();
+      fetchContactsData();
     }
   }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchStats();
+      fetchContactsData();
     }
   }, [timeRange]);
 
@@ -71,10 +118,21 @@ const Dashboard = () => {
     if (isAuthenticated) {
       const interval = setInterval(() => {
         fetchStats();
-      }, 300000);
+        fetchContactsData();
+      }, 300000); // 5 minutes
       return () => clearInterval(interval);
     }
   }, [isAuthenticated, timeRange]);
+
+  // Realtime data auto-refresh (every 30 seconds)
+  useEffect(() => {
+    if (isAuthenticated) {
+      const interval = setInterval(() => {
+        fetchRealtimeData();
+      }, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   const COLORS = ['#a78bfa', '#c084fc', '#e879f9', '#f0abfc', '#fbbf24'];
 
@@ -105,7 +163,7 @@ const Dashboard = () => {
     return (
       <>
         <Head>
-          <title>Dashboard - Ayman Chabbaki</title>
+          <title>🔒 Dashboard - {adminEmail}</title>
           <style>{`
             * { cursor: auto !important; }
           `}</style>
@@ -152,7 +210,7 @@ const Dashboard = () => {
     return (
       <>
         <Head>
-          <title>Analytics Dashboard - Ayman Chabbaki</title>
+          <title>📊 Analytics - {adminEmail}</title>
           <style>{`
             * { cursor: auto !important; }
           `}</style>
@@ -169,7 +227,7 @@ const Dashboard = () => {
   return (
     <>
       <Head>
-        <title>Analytics Dashboard - Ayman Chabbaki</title>
+        <title>📊 Analytics Dashboard - {adminEmail}</title>
         <style>{`
           * { cursor: auto !important; }
           select option { background-color: #1a1a1a; color: white; }
@@ -181,8 +239,26 @@ const Dashboard = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gradient bg-gradient-to-r from-indigo-light to-purple-500">Analytics Dashboard</h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold text-gradient bg-gradient-to-r from-indigo-light to-purple-500">Analytics Dashboard</h1>
+                {realtimeData && (
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="flex items-center gap-2 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-full"
+                  >
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    <span className="text-xs text-green-400 font-semibold">{realtimeData.activeVisitors} Active</span>
+                  </motion.div>
+                )}
+              </div>
               <p className="text-gray-light-3 mt-1">Portfolio Performance Metrics</p>
+              <div className="flex items-center gap-2 mt-2 text-sm text-gray-light-3">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span>{adminEmail}</span>
+              </div>
             </div>
             
             <div className="flex items-center gap-4 flex-wrap">
@@ -197,6 +273,18 @@ const Dashboard = () => {
                 <option value="30d" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 30 Days</option>
                 <option value="90d" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 90 Days</option>
               </select>
+
+              <button onClick={exportData} className="px-4 py-2 bg-gray-dark border border-gray-light-1/20 rounded-lg hover:border-indigo-light/30 transition-colors flex items-center gap-2" title="Export Data">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                </svg>
+              </button>
+
+              <button onClick={fetchRealtimeData} className="px-4 py-2 bg-gray-dark border border-gray-light-1/20 rounded-lg hover:border-green-400/30 transition-colors" title="Refresh Realtime">
+                <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </button>
 
               <button onClick={fetchStats} disabled={refreshing} className="px-4 py-2 bg-gray-dark border border-gray-light-1/20 rounded-lg hover:border-indigo-light/30 transition-colors disabled:opacity-50">
                 <svg className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,6 +321,66 @@ const Dashboard = () => {
             <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} title="Avg. Duration" value={`${Math.floor(stats.engagement.avgDuration / 60)}:${(stats.engagement.avgDuration % 60).toString().padStart(2, '0')}`} change={`${stats.engagement.avgPagesPerSession} pages/session`} />
             <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} title="Bounce Rate" value={`${stats.engagement.bounceRate}%`} change={stats.engagement.bounceRate < 50 ? 'Good' : stats.engagement.bounceRate < 70 ? 'Average' : 'High'} />
           </div>
+
+          {/* Hourly Traffic & Recent Activity */}
+          {realtimeData && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <ChartCard title="Hourly Traffic (Last 24h)" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={realtimeData.hourlyTraffic}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="hour" stroke="#9ca3af" fontSize={10} />
+                    <YAxis stroke="#9ca3af" fontSize={12} />
+                    <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
+                    <Line type="monotone" dataKey="views" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981' }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-indigo-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <h3 className="font-semibold">Recent Activity</h3>
+                  </div>
+                  <div className="text-xs text-gray-light-3">Live</div>
+                </div>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {realtimeData.recentActivity.slice(0, 8).map((activity, index) => (
+                    <motion.div 
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="flex items-center gap-3 p-2 bg-black/30 rounded-lg text-sm"
+                    >
+                      <div className="w-2 h-2 bg-green-400 rounded-full flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 text-xs text-gray-light-2">
+                          <span className="truncate">{activity.page}</span>
+                          <span className="text-gray-light-3">•</span>
+                          <span>{activity.location}</span>
+                        </div>
+                        <div className="text-xs text-gray-light-3 mt-0.5">
+                          {new Date(activity.timestamp).toLocaleTimeString()}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Entry & Exit Pages */}
+          {realtimeData && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <DataCard title="Top Entry Pages" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>} data={realtimeData.entryPages.map(p => ({ label: p.page, value: p.count }))} />
+              <DataCard title="Top Exit Pages" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>} data={realtimeData.exitPages.map(p => ({ label: p.page, value: p.count }))} />
+            </div>
+          )}
 
           {/* Charts Row 1 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -341,6 +489,91 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* Contact Submissions & Feedbacks */}
+          {contactsData && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-indigo-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <h3 className="font-semibold">Contact Submissions</h3>
+                  </div>
+                  <span className="text-sm text-indigo-light font-semibold">{contactsData.totalContacts}</span>
+                </div>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {contactsData.contacts.length === 0 ? (
+                    <p className="text-gray-light-3 text-sm text-center py-8">No contact submissions yet</p>
+                  ) : (
+                    contactsData.contacts.slice(0, 10).map((contact, index) => (
+                      <motion.div 
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="p-4 bg-black/30 rounded-lg border border-gray-light-1/10 hover:border-indigo-light/20 transition-colors"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <p className="font-semibold text-white">{contact.name}</p>
+                            <a href={`mailto:${contact.email}`} className="text-sm text-indigo-light hover:underline">{contact.email}</a>
+                          </div>
+                          <span className="text-xs text-gray-light-3">{new Date(contact.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        {contact.message && (
+                          <p className="text-sm text-gray-light-2 line-clamp-2">{contact.message}</p>
+                        )}
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-indigo-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                    <h3 className="font-semibold">User Feedback</h3>
+                  </div>
+                  <span className="text-sm text-indigo-light font-semibold">{contactsData.totalFeedbacks}</span>
+                </div>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {contactsData.feedbacks.length === 0 ? (
+                    <p className="text-gray-light-3 text-sm text-center py-8">No feedback yet</p>
+                  ) : (
+                    contactsData.feedbacks.slice(0, 10).map((feedback, index) => (
+                      <motion.div 
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="p-4 bg-black/30 rounded-lg border border-gray-light-1/10 hover:border-indigo-light/20 transition-colors"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-white">{feedback.name}</p>
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <svg key={i} className={`w-3 h-3 ${i < feedback.rating ? 'text-yellow-400' : 'text-gray-600'}`} fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                              ))}
+                            </div>
+                          </div>
+                          <span className="text-xs text-gray-light-3">{new Date(feedback.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-sm text-gray-light-2 line-clamp-2">{feedback.feedback}</p>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
