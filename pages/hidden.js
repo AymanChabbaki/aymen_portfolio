@@ -63,9 +63,22 @@ const Dashboard = () => {
     try {
       const response = await fetch('/api/analytics/realtime');
       const data = await response.json();
-      setRealtimeData(data);
+      setRealtimeData(data || {
+        activeVisitors: 0,
+        recentActivity: [],
+        hourlyTraffic: [],
+        entryPages: [],
+        exitPages: []
+      });
     } catch (err) {
       console.error('Failed to fetch realtime data:', err);
+      setRealtimeData({
+        activeVisitors: 0,
+        recentActivity: [],
+        hourlyTraffic: [],
+        entryPages: [],
+        exitPages: []
+      });
     }
   };
 
@@ -73,9 +86,20 @@ const Dashboard = () => {
     try {
       const response = await fetch(`/api/analytics/contacts?timeRange=${timeRange}`);
       const data = await response.json();
-      setContactsData(data);
+      setContactsData(data || {
+        contacts: [],
+        feedbacks: [],
+        totalContacts: 0,
+        totalFeedbacks: 0
+      });
     } catch (err) {
       console.error('Failed to fetch contacts data:', err);
+      setContactsData({
+        contacts: [],
+        feedbacks: [],
+        totalContacts: 0,
+        totalFeedbacks: 0
+      });
     }
   };
 
@@ -140,20 +164,20 @@ const Dashboard = () => {
     if (!stats) return [];
     const alerts = [];
 
-    if (parseFloat(stats.performance.avgLCP) > 2500) {
+    if (parseFloat(stats.performance?.avgLCP || 0) > 2500) {
       alerts.push({ type: 'warning', message: 'LCP is above 2.5s (Poor)' });
     }
-    if (parseFloat(stats.performance.avgFID) > 100) {
+    if (parseFloat(stats.performance?.avgFID || 0) > 100) {
       alerts.push({ type: 'warning', message: 'FID is above 100ms (Poor)' });
     }
-    if (parseFloat(stats.performance.avgCLS) > 0.1) {
+    if (parseFloat(stats.performance?.avgCLS || 0) > 0.1) {
       alerts.push({ type: 'warning', message: 'CLS is above 0.1 (Poor)' });
     }
-    if (parseFloat(stats.engagement.bounceRate) > 70) {
-      alerts.push({ type: 'warning', message: `High bounce rate: ${stats.engagement.bounceRate}%` });
+    if (parseFloat(stats.engagement?.bounceRate || 0) > 70) {
+      alerts.push({ type: 'warning', message: `High bounce rate: ${stats.engagement?.bounceRate || 0}%` });
     }
-    if (parseFloat(stats.errorRate) > 1) {
-      alerts.push({ type: 'error', message: `Error rate: ${stats.errorRate}% (${stats.errorCount} errors)` });
+    if (parseFloat(stats.errorRate || 0) > 1) {
+      alerts.push({ type: 'error', message: `Error rate: ${stats.errorRate || 0}% (${stats.errorCount || 0} errors)` });
     }
 
     return alerts;
@@ -316,14 +340,14 @@ const Dashboard = () => {
 
           {/* Overview Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>} title="Total Visitors" value={stats.overview.totalVisitors.toLocaleString()} change={`${stats.overview.totalPageViews} views`} />
-            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} title="New Visitors" value={stats.overview.newVisitors.toLocaleString()} change={`${stats.overview.returningVisitors} returning`} />
-            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} title="Avg. Duration" value={`${Math.floor(stats.engagement.avgDuration / 60)}:${(stats.engagement.avgDuration % 60).toString().padStart(2, '0')}`} change={`${stats.engagement.avgPagesPerSession} pages/session`} />
-            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} title="Bounce Rate" value={`${stats.engagement.bounceRate}%`} change={stats.engagement.bounceRate < 50 ? 'Good' : stats.engagement.bounceRate < 70 ? 'Average' : 'High'} />
+            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>} title="Total Visitors" value={(stats.overview?.totalVisitors || 0).toLocaleString()} change={`${stats.overview?.totalPageViews || 0} views`} />
+            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} title="New Visitors" value={(stats.overview?.newVisitors || 0).toLocaleString()} change={`${stats.overview?.returningVisitors || 0} returning`} />
+            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} title="Avg. Duration" value={`${Math.floor((stats.engagement?.avgDuration || 0) / 60)}:${((stats.engagement?.avgDuration || 0) % 60).toString().padStart(2, '0')}`} change={`${stats.engagement?.avgPagesPerSession || 0} pages/session`} />
+            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} title="Bounce Rate" value={`${stats.engagement?.bounceRate || 0}%`} change={(stats.engagement?.bounceRate || 0) < 50 ? 'Good' : (stats.engagement?.bounceRate || 0) < 70 ? 'Average' : 'High'} />
           </div>
 
           {/* Hourly Traffic & Recent Activity */}
-          {realtimeData && (
+          {realtimeData && realtimeData.hourlyTraffic && realtimeData.recentActivity && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <ChartCard title="Hourly Traffic (Last 24h)" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}>
                 <ResponsiveContainer width="100%" height={250}>
@@ -348,7 +372,7 @@ const Dashboard = () => {
                   <div className="text-xs text-gray-light-3">Live</div>
                 </div>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {realtimeData.recentActivity.slice(0, 8).map((activity, index) => (
+                  {(realtimeData.recentActivity || []).slice(0, 8).map((activity, index) => (
                     <motion.div 
                       key={index}
                       initial={{ opacity: 0, x: -20 }}
@@ -375,10 +399,10 @@ const Dashboard = () => {
           )}
 
           {/* Entry & Exit Pages */}
-          {realtimeData && (
+          {realtimeData && realtimeData.entryPages && realtimeData.exitPages && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <DataCard title="Top Entry Pages" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>} data={realtimeData.entryPages.map(p => ({ label: p.page, value: p.count }))} />
-              <DataCard title="Top Exit Pages" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>} data={realtimeData.exitPages.map(p => ({ label: p.page, value: p.count }))} />
+              <DataCard title="Top Entry Pages" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>} data={(realtimeData.entryPages || []).map(p => ({ label: p.page, value: p.count }))} />
+              <DataCard title="Top Exit Pages" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>} data={(realtimeData.exitPages || []).map(p => ({ label: p.page, value: p.count }))} />
             </div>
           )}
 
@@ -386,7 +410,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <ChartCard title="Traffic Trend" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>}>
               <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={stats.trends}>
+                <LineChart data={stats.trends || []}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="date" stroke="#9ca3af" fontSize={12} />
                   <YAxis stroke="#9ca3af" fontSize={12} />
@@ -399,7 +423,7 @@ const Dashboard = () => {
             <ChartCard title="Traffic Sources" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
-                  <Pie data={[{ name: 'Direct', value: stats.trafficSources.direct }, { name: 'Social', value: stats.trafficSources.social }, { name: 'Search', value: stats.trafficSources.search }, { name: 'Other', value: stats.trafficSources.other }]} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+                  <Pie data={[{ name: 'Direct', value: stats.trafficSources?.direct || 0 }, { name: 'Social', value: stats.trafficSources?.social || 0 }, { name: 'Search', value: stats.trafficSources?.search || 0 }, { name: 'Other', value: stats.trafficSources?.other || 0 }]} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
                     {COLORS.map((color, index) => <Cell key={`cell-${index}`} fill={color} />)}
                   </Pie>
                   <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
@@ -412,7 +436,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <ChartCard title="Device Breakdown" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>}>
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={[{ device: 'Mobile', count: stats.devices.counts.mobile || 0 }, { device: 'Desktop', count: stats.devices.counts.desktop || 0 }, { device: 'Tablet', count: stats.devices.counts.tablet || 0 }]}>
+                <BarChart data={[{ device: 'Mobile', count: stats.devices?.counts?.mobile || 0 }, { device: 'Desktop', count: stats.devices?.counts?.desktop || 0 }, { device: 'Tablet', count: stats.devices?.counts?.tablet || 0 }]}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="device" stroke="#9ca3af" fontSize={12} />
                   <YAxis stroke="#9ca3af" fontSize={12} />
@@ -424,7 +448,7 @@ const Dashboard = () => {
 
             <ChartCard title="Top Browsers" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>}>
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={stats.devices.browsers} layout="vertical">
+                <BarChart data={stats.devices?.browsers || []} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis type="number" stroke="#9ca3af" fontSize={12} />
                   <YAxis dataKey="name" type="category" stroke="#9ca3af" fontSize={12} width={80} />
@@ -437,8 +461,8 @@ const Dashboard = () => {
 
           {/* Location & Performance */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <DataCard title="Top Countries" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} data={stats.overview.topCountries.map(c => ({ label: c.name, value: c.count }))} />
-            <DataCard title="Top Cities" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} data={stats.overview.topCities.map(c => ({ label: c.name, value: c.count }))} />
+            <DataCard title="Top Countries" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} data={(stats.overview?.topCountries || []).map(c => ({ label: c.name, value: c.count }))} />
+            <DataCard title="Top Cities" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} data={(stats.overview?.topCities || []).map(c => ({ label: c.name, value: c.count }))} />
 
             <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -448,10 +472,10 @@ const Dashboard = () => {
                 <h3 className="font-semibold">Core Web Vitals</h3>
               </div>
               <div className="space-y-3">
-                <MetricBar label="LCP" value={`${stats.performance.avgLCP}ms`} percentage={(parseFloat(stats.performance.avgLCP) / 4000) * 100} status={parseFloat(stats.performance.avgLCP) < 2500 ? 'good' : parseFloat(stats.performance.avgLCP) < 4000 ? 'average' : 'poor'} />
-                <MetricBar label="FID" value={`${stats.performance.avgFID}ms`} percentage={(parseFloat(stats.performance.avgFID) / 300) * 100} status={parseFloat(stats.performance.avgFID) < 100 ? 'good' : parseFloat(stats.performance.avgFID) < 300 ? 'average' : 'poor'} />
-                <MetricBar label="CLS" value={stats.performance.avgCLS} percentage={(parseFloat(stats.performance.avgCLS) / 0.25) * 100} status={parseFloat(stats.performance.avgCLS) < 0.1 ? 'good' : parseFloat(stats.performance.avgCLS) < 0.25 ? 'average' : 'poor'} />
-                <MetricBar label="Load Time" value={`${stats.performance.avgLoadTime}ms`} percentage={(parseFloat(stats.performance.avgLoadTime) / 5000) * 100} status={parseFloat(stats.performance.avgLoadTime) < 3000 ? 'good' : parseFloat(stats.performance.avgLoadTime) < 5000 ? 'average' : 'poor'} />
+                <MetricBar label="LCP" value={`${stats.performance?.avgLCP || 0}ms`} percentage={(parseFloat(stats.performance?.avgLCP || 0) / 4000) * 100} status={parseFloat(stats.performance?.avgLCP || 0) < 2500 ? 'good' : parseFloat(stats.performance?.avgLCP || 0) < 4000 ? 'average' : 'poor'} />
+                <MetricBar label="FID" value={`${stats.performance?.avgFID || 0}ms`} percentage={(parseFloat(stats.performance?.avgFID || 0) / 300) * 100} status={parseFloat(stats.performance?.avgFID || 0) < 100 ? 'good' : parseFloat(stats.performance?.avgFID || 0) < 300 ? 'average' : 'poor'} />
+                <MetricBar label="CLS" value={stats.performance?.avgCLS || 0} percentage={(parseFloat(stats.performance?.avgCLS || 0) / 0.25) * 100} status={parseFloat(stats.performance?.avgCLS || 0) < 0.1 ? 'good' : parseFloat(stats.performance?.avgCLS || 0) < 0.25 ? 'average' : 'poor'} />
+                <MetricBar label="Load Time" value={`${stats.performance?.avgLoadTime || 0}ms`} percentage={(parseFloat(stats.performance?.avgLoadTime || 0) / 5000) * 100} status={parseFloat(stats.performance?.avgLoadTime || 0) < 3000 ? 'good' : parseFloat(stats.performance?.avgLoadTime || 0) < 5000 ? 'average' : 'poor'} />
               </div>
             </div>
           </div>
@@ -466,9 +490,9 @@ const Dashboard = () => {
                 <h3 className="font-semibold">Goal Conversions</h3>
               </div>
               <div className="space-y-4">
-                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>} label="CV Downloads" value={stats.conversions.downloads} />
-                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>} label="Contact Submissions" value={stats.conversions.contactSubmissions} />
-                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>} label="Social Link Clicks" value={stats.conversions.socialClicks} />
+                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>} label="CV Downloads" value={stats.conversions?.downloads || 0} />
+                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>} label="Contact Submissions" value={stats.conversions?.contactSubmissions || 0} />
+                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>} label="Social Link Clicks" value={stats.conversions?.socialClicks || 0} />
               </div>
             </div>
 
@@ -480,7 +504,7 @@ const Dashboard = () => {
                 <h3 className="font-semibold">Top Pages</h3>
               </div>
               <div className="space-y-2 max-h-80 overflow-y-auto">
-                {stats.topPages.slice(0, 10).map((page, index) => (
+                {(stats.topPages || []).slice(0, 10).map((page, index) => (
                   <div key={index} className="flex items-center justify-between py-2 border-b border-gray-light-1/10 last:border-0">
                     <span className="text-gray-light-2 text-sm truncate flex-1">{page.path || '/'}</span>
                     <span className="text-indigo-light font-semibold ml-4">{page.views}</span>
@@ -491,7 +515,7 @@ const Dashboard = () => {
           </div>
 
           {/* Contact Submissions & Feedbacks */}
-          {contactsData && (
+          {contactsData && contactsData.contacts && contactsData.feedbacks && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -507,7 +531,7 @@ const Dashboard = () => {
                   {contactsData.contacts.length === 0 ? (
                     <p className="text-gray-light-3 text-sm text-center py-8">No contact submissions yet</p>
                   ) : (
-                    contactsData.contacts.slice(0, 10).map((contact, index) => (
+                    (contactsData.contacts || []).slice(0, 10).map((contact, index) => (
                       <motion.div 
                         key={index}
                         initial={{ opacity: 0, y: 10 }}
@@ -545,7 +569,7 @@ const Dashboard = () => {
                   {contactsData.feedbacks.length === 0 ? (
                     <p className="text-gray-light-3 text-sm text-center py-8">No feedback yet</p>
                   ) : (
-                    contactsData.feedbacks.slice(0, 10).map((feedback, index) => (
+                    (contactsData.feedbacks || []).slice(0, 10).map((feedback, index) => (
                       <motion.div 
                         key={index}
                         initial={{ opacity: 0, y: 10 }}
