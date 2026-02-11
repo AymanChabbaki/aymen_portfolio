@@ -60,9 +60,25 @@ const Projects = ({ isDesktop, clientHeight }) => {
     const sidePadding =
       document.body.clientWidth -
       sectionRef.current.querySelector(".inner-container").clientWidth;
-    const elementWidth =
-      sidePadding +
-      sectionRef.current.querySelector(".project-wrapper").clientWidth;
+    
+    // Get the actual width of all project cards including margins
+    const projectWrapper = sectionRef.current.querySelector(".project-wrapper");
+    const projectCards = projectWrapper.querySelectorAll('a');
+    let totalProjectWidth = 0;
+    projectCards.forEach((card, index) => {
+      totalProjectWidth += card.offsetWidth;
+      // Add margin between cards (not for the last one)
+      if (index < projectCards.length - 1) {
+        const computedStyle = window.getComputedStyle(card);
+        const marginRight = parseFloat(computedStyle.marginRight) || 0;
+        totalProjectWidth += marginRight;
+      }
+    });
+    
+    // Add triple viewport width to ensure last project is fully visible with comfortable spacing
+    const extraPadding = window.innerWidth * 2.5;
+    const elementWidth = sidePadding + totalProjectWidth + extraPadding;
+    
     sectionRef.current.style.width = `${elementWidth}px`;
     const width = window.innerWidth - elementWidth;
     const duration = `${(elementWidth / window.innerHeight) * 100}%`;

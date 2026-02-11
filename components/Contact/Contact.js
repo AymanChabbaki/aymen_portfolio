@@ -10,6 +10,9 @@ import { MENULINKS } from "../../constants";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { getTranslation } from "../../locales/translations";
 import { trackFormSubmission } from "../../hooks/useAnalytics";
+import usePortfolioAnalytics from "../../hooks/usePortfolioAnalytics";
+import { useConfetti } from "../../hooks/useConfetti";
+import { useSoundEffects } from "../../hooks/useSoundEffects";
 
 const filter = new Filter();
 filter.removeWords("hell", "god", "shit");
@@ -30,6 +33,9 @@ const Contact = () => {
   const [isSending, setIsSending] = useState(false);
   const buttonElementRef = useRef(null);
   const sectionRef = useRef(null);
+  const { fireConfetti } = useConfetti();
+  const { playSuccessSound } = useSoundEffects();
+  const { trackEvent } = usePortfolioAnalytics();
   const { language } = useLanguage();
 
   const empty = () =>
@@ -82,13 +88,21 @@ const Contact = () => {
 
     setIsSending(true);
     
-    // Track form submission
+    // Track form submission with old analytics
     trackFormSubmission('contact', { name, hasEmail: !!email, messageLength: message.length });
+    
+    // Track with new analytics system
+    trackEvent('contact_submit', { 
+      hasName: !!name, 
+      hasEmail: !!email, 
+      messageLength: message.length 
+    });
     
     mail({ name, email, message })
       .then((res) => {
         if (res.status === 200) {
           setMailerResponse("success");
+          fireConfetti(); // Celebration!
           emptyForm();
         } else {
           setMailerResponse("error");

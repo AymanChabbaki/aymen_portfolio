@@ -38,7 +38,7 @@ const Work = ({ isDesktop }) => {
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [activeView]); // Re-run animation when activeView changes
 
   return (
     <section
@@ -141,7 +141,7 @@ const Work = ({ isDesktop }) => {
           </motion.div>
 
           {/* Timeline */}
-          <div className="mt-8">
+          <div className="mt-8" key={activeView}>
             <Timeline items={filteredTimeline} />
           </div>
         </div>

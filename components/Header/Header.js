@@ -6,6 +6,7 @@ import SoundBar from "./SoundBar/SoundBar";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { getTranslation } from "../../locales/translations";
 import { trackDownload } from "../../hooks/useAnalytics";
+import usePortfolioAnalytics from "../../hooks/usePortfolioAnalytics";
 
 const multiPop = new Howl({
   src: ["/sounds/multi-pop.mp3"],
@@ -14,13 +15,17 @@ const multiPop = new Howl({
 const Header = ({ children }) => {
   const inputRef = useRef(null);
   const { language, toggleLanguage } = useLanguage();
+  const { trackEvent } = usePortfolioAnalytics();
 
   const handleDownloadResume = () => {
     const resumeFile = language === 'fr' ? '/fr.pdf' : '/us.pdf';
     const fileName = language === 'fr' ? 'CV_Ayman_Chabbaki.pdf' : 'Resume_Ayman_Chabbaki.pdf';
     
-    // Track download
+    // Track download with old analytics
     trackDownload(fileName, 'resume');
+    
+    // Track with new analytics system
+    trackEvent('download_cv', { fileName, language });
     
     const link = document.createElement('a');
     link.href = resumeFile;

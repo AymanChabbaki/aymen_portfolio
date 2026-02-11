@@ -806,3 +806,65 @@ $bg: #f4faff;
 #mouth-frown {
   visibility: hidden;
 }
+
+// Fun animations for interactive elements
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes rainbow {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(102, 126, 234, 0.5)); }
+  50% { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.9)); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+// Utility classes for fun interactions
+.shake-on-hover:hover {
+  animation: shake 0.5s ease;
+}
+
+.wiggle-on-hover:hover {
+  animation: wiggle 0.5s ease;
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pulse-glow-animation {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+// 3D Timeline perspective
+.work-wrapper {
+  perspective: 2000px;
+  perspective-origin: 50% 50%;
+}
+
+// Enable 3D transforms globally for timeline
+[style*="transform-style: preserve-3d"] {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}

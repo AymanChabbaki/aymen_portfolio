@@ -44,6 +44,12 @@ export const translations = {
     projectRecruitment: "Plateforme de gestion des recrutements",
     projectTeamSeries: "Netflix-like app for series",
     projectChatAtlas: "Messagerie en temps réel",
+    projectGestionDataExcel: "Gestion et visualisation de données Excel",
+    projectTravelMoroccoApp: "Plateforme de découverte du Maroc",
+    projectCryptoApp: "Suivi de cryptomonnaies en temps réel",
+    projectMyElectronicShop: "Gestion de magasin électronique",
+    projectBlindWeatherPrediction: "Prédiction météo vocale pour aveugles",
+    projectAncestryPrediction: "Prédiction d'origine ethnique par IA",
     projectIptv: "Site IPTV avec streaming fluide",
     
     // Typed Strings
@@ -175,6 +181,12 @@ export const translations = {
     projectRecruitment: "Recruitment management platform",
     projectTeamSeries: "Netflix-like app for series",
     projectChatAtlas: "Real-time messaging app",
+    projectGestionDataExcel: "Excel data management and visualization",
+    projectTravelMoroccoApp: "Morocco travel discovery platform",
+    projectCryptoApp: "Real-time cryptocurrency tracker",
+    projectMyElectronicShop: "Electronic shop management",
+    projectBlindWeatherPrediction: "Voice weather prediction for blind people",
+    projectAncestryPrediction: "AI-powered ancestry prediction",
     projectIptv: "IPTV website with smooth streaming",
     
     // Typed Strings

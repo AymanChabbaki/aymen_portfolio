@@ -1,38 +1,50 @@
-.projectTile {
-  height: 22rem;
-  width: 38rem;
-  transform-style: preserve-3d;
-  transform: perspective(1000px);
 
-  @media (min-width: 768px) {
-    height: 26rem;
+.projectTile {
+  width: 50rem;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  background: none !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex-shrink: 0;
+
+  @media (max-width: 1200px) {
+    width: 42rem;
   }
 
-  img {
-    object-fit: cover;
+  @media (max-width: 768px) {
+    width: 90vw;
+    max-width: 36rem;
+  }
+
+  @media (max-width: 480px) {
+    width: 90vw;
+    aspect-ratio: 4 / 3;
   }
 }
 
 .projectImage {
-  @apply absolute top-0 rounded-xl shadow-xl;
-
-  width: 17rem !important;
-  max-width: 17rem !important;
-  transform: rotate(-22.5deg);
-  height: unset !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 1.5rem !important;
+  z-index: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  transform: none !important;
   min-width: unset !important;
+  max-width: unset !important;
+  min-height: unset !important;
   max-height: unset !important;
-  object-fit: contain !important;
-  left: unset !important;
-  right: 2rem !important;
-  bottom: unset !important;
-  clip-path: inset(0);
-  z-index: 0;
-
-  @media (max-width: 480px) {
-    width: clamp(12rem, 40vw, 16rem) !important;
-    right: clamp(-2rem, 2vw, 1.5rem) !important;
-  }
+  clip-path: none !important;
 }
 
 .techIcons {

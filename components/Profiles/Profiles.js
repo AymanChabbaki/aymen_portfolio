@@ -1,9 +1,16 @@
 import { motion } from "framer-motion";
 import { SOCIAL_LINKS } from "../../constants";
 import { Icon } from "@/components/Icons";
+import usePortfolioAnalytics from "../../hooks/usePortfolioAnalytics";
 import styles from "./Profiles.module.scss";
 
 const Profiles = () => {
+  const { trackEvent } = usePortfolioAnalytics();
+
+  const handleSocialClick = (name, url) => {
+    trackEvent('social_click', { platform: name, url });
+  };
+
   return (
     <div className={styles.profile}>
       {SOCIAL_LINKS &&
@@ -25,6 +32,7 @@ const Profiles = () => {
             rel="noreferrer"
             target="_blank"
             aria-label={name}
+            onClick={() => handleSocialClick(name, url)}
           >
             <Icon name={name} />
           </motion.a>

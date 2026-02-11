@@ -1,393 +1,413 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import Head from "next/head";
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Head from 'next/head';
 
-const AnalyticsDashboard = () => {
-  const [analytics, setAnalytics] = useState(null);
-  const [loading, setLoading] = useState(true);
+const Dashboard = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [timeRange, setTimeRange] = useState('7d');
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadAnalytics();
-    setLoading(false);
-  }, []);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const loadAnalytics = () => {
-    // Load analytics from localStorage
-    const pageViews = JSON.parse(localStorage.getItem("analytics_pageViews") || "[]");
-    const interactions = JSON.parse(localStorage.getItem("analytics_interactions") || "[]");
-    const sessions = JSON.parse(localStorage.getItem("analytics_sessions") || "[]");
+    try {
+      const response = await fetch('/api/dashboard/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
 
-    setAnalytics({
-      pageViews,
-      interactions,
-      sessions,
-      totalViews: pageViews.length,
-      totalInteractions: interactions.length,
-      totalSessions: sessions.length,
-    });
-  };
+      const data = await response.json();
 
-  const getTopPages = () => {
-    if (!analytics) return [];
-    const pageCounts = {};
-    analytics.pageViews.forEach((view) => {
-      pageCounts[view.page] = (pageCounts[view.page] || 0) + 1;
-    });
-    return Object.entries(pageCounts)
-      .map(([page, count]) => ({ page, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-  };
-
-  const getInteractionStats = () => {
-    if (!analytics) return {};
-    const stats = {
-      clicks: 0,
-      scrolls: 0,
-      formSubmissions: 0,
-      downloads: 0,
-      other: 0,
-    };
-    analytics.interactions.forEach((interaction) => {
-      if (stats[interaction.type] !== undefined) {
-        stats[interaction.type]++;
+      if (data.success) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('dashboard_auth', 'true');
+        fetchStats();
       } else {
-        stats.other++;
+        setError('Invalid password');
       }
-    });
-    return stats;
-  };
-
-  const getDeviceStats = () => {
-    if (!analytics) return {};
-    const devices = {};
-    analytics.sessions.forEach((session) => {
-      const device = session.device || "Unknown";
-      devices[device] = (devices[device] || 0) + 1;
-    });
-    return devices;
-  };
-
-  const getLocationStats = () => {
-    if (!analytics) return {};
-    const locations = {};
-    analytics.sessions.forEach((session) => {
-      const location = session.location || "Unknown";
-      locations[location] = (locations[location] || 0) + 1;
-    });
-    return locations;
-  };
-
-  const getReferrerStats = () => {
-    if (!analytics) return {};
-    const referrers = {};
-    analytics.sessions.forEach((session) => {
-      const referrer = session.referrer || "Direct";
-      referrers[referrer] = (referrers[referrer] || 0) + 1;
-    });
-    return referrers;
-  };
-
-  const getRecentActivity = () => {
-    if (!analytics) return [];
-    const allActivity = [
-      ...analytics.pageViews.map((v) => ({ ...v, type: "pageView" })),
-      ...analytics.interactions.map((i) => ({ ...i, type: "interaction" })),
-    ]
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .slice(0, 20);
-    return allActivity;
-  };
-
-  const clearAnalytics = () => {
-    if (confirm("Are you sure you want to clear all analytics data?")) {
-      localStorage.removeItem("analytics_pageViews");
-      localStorage.removeItem("analytics_interactions");
-      localStorage.removeItem("analytics_sessions");
-      loadAnalytics();
+    } catch (err) {
+      setError('Authentication failed');
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) {
+  const fetchStats = async () => {
+    setRefreshing(true);
+    try {
+      const response = await fetch(`/api/analytics/stats?timeRange=${timeRange}`);
+      const data = await response.json();
+      setStats(data);
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    const isAuth = sessionStorage.getItem('dashboard_auth');
+    if (isAuth === 'true') {
+      setIsAuthenticated(true);
+      fetchStats();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchStats();
+    }
+  }, [timeRange]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const interval = setInterval(() => {
+        fetchStats();
+      }, 300000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, timeRange]);
+
+  const COLORS = ['#a78bfa', '#c084fc', '#e879f9', '#f0abfc', '#fbbf24'];
+
+  const getAlerts = () => {
+    if (!stats) return [];
+    const alerts = [];
+
+    if (parseFloat(stats.performance.avgLCP) > 2500) {
+      alerts.push({ type: 'warning', message: 'LCP is above 2.5s (Poor)' });
+    }
+    if (parseFloat(stats.performance.avgFID) > 100) {
+      alerts.push({ type: 'warning', message: 'FID is above 100ms (Poor)' });
+    }
+    if (parseFloat(stats.performance.avgCLS) > 0.1) {
+      alerts.push({ type: 'warning', message: 'CLS is above 0.1 (Poor)' });
+    }
+    if (parseFloat(stats.engagement.bounceRate) > 70) {
+      alerts.push({ type: 'warning', message: `High bounce rate: ${stats.engagement.bounceRate}%` });
+    }
+    if (parseFloat(stats.errorRate) > 1) {
+      alerts.push({ type: 'error', message: `Error rate: ${stats.errorRate}% (${stats.errorCount} errors)` });
+    }
+
+    return alerts;
+  };
+
+  if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-2xl">Loading...</div>
-      </div>
+      <>
+        <Head>
+          <title>Dashboard - Ayman Chabbaki</title>
+          <style>{`
+            * { cursor: auto !important; }
+          `}</style>
+        </Head>
+        <div className="min-h-screen bg-black flex items-center justify-center px-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full">
+            <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-8">
+              <div className="flex items-center justify-center mb-6">
+                <svg className="w-12 h-12 text-indigo-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-bold text-white text-center mb-2">Analytics Dashboard</h1>
+              <p className="text-gray-light-3 text-center mb-6">Enter password to access</p>
+              
+              <form onSubmit={handleLogin}>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full px-4 py-3 bg-black border border-gray-light-1/20 rounded-lg text-white focus:border-indigo-light focus:outline-none mb-4"
+                  autoFocus
+                />
+                
+                {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+                
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full px-4 py-3 bg-indigo-light hover:bg-indigo-light/90 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Authenticating...' : 'Access Dashboard'}
+                </button>
+              </form>
+            </div>
+          </motion.div>
+        </div>
+      </>
     );
   }
 
-  if (!analytics) {
+  if (!stats) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-2xl">No analytics data available</div>
+      <>
+        <Head>
+          <title>Analytics Dashboard - Ayman Chabbaki</title>
+          <style>{`
+            * { cursor: auto !important; }
+          `}</style>
+        </Head>
+        <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">Loading analytics...</div>
       </div>
+      </>
     );
   }
 
-  const topPages = getTopPages();
-  const interactionStats = getInteractionStats();
-  const deviceStats = getDeviceStats();
-  const locationStats = getLocationStats();
-  const referrerStats = getReferrerStats();
-  const recentActivity = getRecentActivity();
+  const alerts = getAlerts();
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 md:p-8">
+    <>
       <Head>
         <title>Analytics Dashboard - Ayman Chabbaki</title>
+        <style>{`
+          * { cursor: auto !important; }
+          select option { background-color: #1a1a1a; color: white; }
+        `}</style>
       </Head>
-
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex justify-between items-center">
+      <div className="min-h-screen bg-black text-white p-4 md:p-6">
+        <div className="max-w-7xl mx-auto">
+          {/*(Rest of dashboard JSX from previous version - continued in next part)*/}
+          {/* Header */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-light to-purple-500 bg-clip-text text-transparent mb-2">
-                📊 Analytics Dashboard
-              </h1>
-              <p className="text-gray-400">Real-time portfolio insights</p>
+              <h1 className="text-3xl font-bold text-gradient bg-gradient-to-r from-indigo-light to-purple-500">Analytics Dashboard</h1>
+              <p className="text-gray-light-3 mt-1">Portfolio Performance Metrics</p>
             </div>
-            <button
-              onClick={clearAnalytics}
-              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all duration-300 border border-red-500/30"
-            >
-              Clear Data
-            </button>
-          </div>
-        </motion.div>
-
-        {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            title="Total Views"
-            value={analytics?.totalViews || 0}
-            icon="👁️"
-            delay={0.1}
-          />
-          <StatCard
-            title="Interactions"
-            value={analytics?.totalInteractions || 0}
-            icon="🖱️"
-            delay={0.2}
-          />
-          <StatCard
-            title="Sessions"
-            value={analytics?.totalSessions || 0}
-            icon="👥"
-            delay={0.3}
-          />
-          <StatCard
-            title="Avg. Session"
-            value={`${Math.round((analytics?.pageViews.length / Math.max(analytics?.totalSessions, 1)) * 10) / 10} pages`}
-            icon="⏱️"
-            delay={0.4}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Top Pages */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-gray-900 rounded-lg p-6 border border-gray-800"
-          >
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              📄 Top Pages
-            </h2>
-            <div className="space-y-3">
-              {topPages.map((page, index) => (
-                <div key={page.page} className="flex justify-between items-center">
-                  <span className="text-gray-300 truncate flex-1">{page.page}</span>
-                  <span className="text-indigo-light font-bold ml-4">
-                    {page.count} views
-                  </span>
-                </div>
-              ))}
-              {topPages.length === 0 && (
-                <p className="text-gray-500">No page views yet</p>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Interaction Types */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-gray-900 rounded-lg p-6 border border-gray-800"
-          >
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              🎯 Interaction Types
-            </h2>
-            <div className="space-y-3">
-              {Object.entries(interactionStats).map(([type, count]) => (
-                <div key={type} className="flex justify-between items-center">
-                  <span className="text-gray-300 capitalize">{type}</span>
-                  <div className="flex items-center gap-3">
-                    <div className="w-32 bg-gray-800 rounded-full h-2">
-                      <div
-                        className="bg-gradient-to-r from-indigo-light to-purple-500 h-2 rounded-full"
-                        style={{
-                          width: `${(count / Math.max(...Object.values(interactionStats), 1)) * 100}%`,
-                        }}
-                      />
-                    </div>
-                    <span className="text-indigo-light font-bold w-8 text-right">
-                      {count}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Device Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="bg-gray-900 rounded-lg p-6 border border-gray-800"
-          >
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              💻 Devices
-            </h2>
-            <div className="space-y-2">
-              {Object.entries(deviceStats).map(([device, count]) => (
-                <div key={device} className="flex justify-between">
-                  <span className="text-gray-300">{device}</span>
-                  <span className="text-indigo-light font-bold">{count}</span>
-                </div>
-              ))}
-              {Object.keys(deviceStats).length === 0 && (
-                <p className="text-gray-500">No device data</p>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Location Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="bg-gray-900 rounded-lg p-6 border border-gray-800"
-          >
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              🌍 Locations
-            </h2>
-            <div className="space-y-2">
-              {Object.entries(locationStats).map(([location, count]) => (
-                <div key={location} className="flex justify-between">
-                  <span className="text-gray-300">{location}</span>
-                  <span className="text-indigo-light font-bold">{count}</span>
-                </div>
-              ))}
-              {Object.keys(locationStats).length === 0 && (
-                <p className="text-gray-500">No location data</p>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Referrer Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            className="bg-gray-900 rounded-lg p-6 border border-gray-800"
-          >
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              🔗 Traffic Sources
-            </h2>
-            <div className="space-y-2">
-              {Object.entries(referrerStats).map(([referrer, count]) => (
-                <div key={referrer} className="flex justify-between">
-                  <span className="text-gray-300 truncate flex-1 mr-2">
-                    {referrer}
-                  </span>
-                  <span className="text-indigo-light font-bold">{count}</span>
-                </div>
-              ))}
-              {Object.keys(referrerStats).length === 0 && (
-                <p className="text-gray-500">No referrer data</p>
-              )}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Recent Activity */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0 }}
-          className="bg-gray-900 rounded-lg p-6 border border-gray-800"
-        >
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            ⚡ Recent Activity
-          </h2>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            {recentActivity.map((activity, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
+            
+            <div className="flex items-center gap-4 flex-wrap">
+              <select
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value)}
+                className="px-4 py-2 bg-gray-dark border border-gray-light-1/20 rounded-lg text-white focus:border-indigo-light focus:outline-none text-sm cursor-pointer"
+                style={{ backgroundColor: '#1a1a1a' }}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">
-                    {activity.type === "pageView" ? "👁️" : "🖱️"}
-                  </span>
-                  <div>
-                    <p className="text-white font-medium">
-                      {activity.page || activity.action || activity.element}
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                      {activity.type === "pageView" ? "Page View" : activity.type}
-                    </p>
-                  </div>
-                </div>
-                <span className="text-gray-500 text-sm">
-                  {new Date(activity.timestamp).toLocaleString()}
-                </span>
-              </div>
-            ))}
-            {recentActivity.length === 0 && (
-              <p className="text-gray-500 text-center py-8">No activity yet</p>
-            )}
-          </div>
-        </motion.div>
+                <option value="24h" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 24 Hours</option>
+                <option value="7d" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 7 Days</option>
+                <option value="30d" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 30 Days</option>
+                <option value="90d" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 90 Days</option>
+              </select>
 
-        {/* Footer */}
-        <div className="mt-8 text-center text-gray-500 text-sm">
-          <p>Analytics are stored locally in your browser</p>
-          <p className="mt-2">
-            Session active • Last updated: {new Date().toLocaleString()}
-          </p>
+              <button onClick={fetchStats} disabled={refreshing} className="px-4 py-2 bg-gray-dark border border-gray-light-1/20 rounded-lg hover:border-indigo-light/30 transition-colors disabled:opacity-50">
+                <svg className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+
+              <button onClick={() => { setIsAuthenticated(false); sessionStorage.removeItem('dashboard_auth'); }} className="px-4 py-2 bg-gray-dark border border-gray-light-1/20 rounded-lg hover:border-red-400/30 transition-colors text-red-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Alerts */}
+          {alerts.length > 0 && (
+            <div className="mb-6 space-y-2">
+              {alerts.map((alert, index) => (
+                <motion.div key={index} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }} className={`flex items-center gap-3 p-4 rounded-lg border ${alert.type === 'error' ? 'bg-red-500/10 border-red-500/30' : 'bg-yellow-500/10 border-yellow-500/30'}`}>
+                  <svg className={`w-5 h-5 flex-shrink-0 ${alert.type === 'error' ? 'text-red-400' : 'text-yellow-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <span className="text-sm">{alert.message}</span>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {/* Overview Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>} title="Total Visitors" value={stats.overview.totalVisitors.toLocaleString()} change={`${stats.overview.totalPageViews} views`} />
+            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} title="New Visitors" value={stats.overview.newVisitors.toLocaleString()} change={`${stats.overview.returningVisitors} returning`} />
+            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} title="Avg. Duration" value={`${Math.floor(stats.engagement.avgDuration / 60)}:${(stats.engagement.avgDuration % 60).toString().padStart(2, '0')}`} change={`${stats.engagement.avgPagesPerSession} pages/session`} />
+            <StatCard icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} title="Bounce Rate" value={`${stats.engagement.bounceRate}%`} change={stats.engagement.bounceRate < 50 ? 'Good' : stats.engagement.bounceRate < 70 ? 'Average' : 'High'} />
+          </div>
+
+          {/* Charts Row 1 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <ChartCard title="Traffic Trend" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>}>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={stats.trends}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="date" stroke="#9ca3af" fontSize={12} />
+                  <YAxis stroke="#9ca3af" fontSize={12} />
+                  <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
+                  <Line type="monotone" dataKey="views" stroke="#a78bfa" strokeWidth={2} dot={{ fill: '#a78bfa' }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard title="Traffic Sources" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie data={[{ name: 'Direct', value: stats.trafficSources.direct }, { name: 'Social', value: stats.trafficSources.social }, { name: 'Search', value: stats.trafficSources.search }, { name: 'Other', value: stats.trafficSources.other }]} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+                    {COLORS.map((color, index) => <Cell key={`cell-${index}`} fill={color} />)}
+                  </Pie>
+                  <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+
+          {/* Charts Row 2 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <ChartCard title="Device Breakdown" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>}>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={[{ device: 'Mobile', count: stats.devices.counts.mobile || 0 }, { device: 'Desktop', count: stats.devices.counts.desktop || 0 }, { device: 'Tablet', count: stats.devices.counts.tablet || 0 }]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="device" stroke="#9ca3af" fontSize={12} />
+                  <YAxis stroke="#9ca3af" fontSize={12} />
+                  <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
+                  <Bar dataKey="count" fill="#a78bfa" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard title="Top Browsers" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>}>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={stats.devices.browsers} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis type="number" stroke="#9ca3af" fontSize={12} />
+                  <YAxis dataKey="name" type="category" stroke="#9ca3af" fontSize={12} width={80} />
+                  <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
+                  <Bar dataKey="count" fill="#c084fc" radius={[0, 8, 8, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+
+          {/* Location & Performance */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <DataCard title="Top Countries" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} data={stats.overview.topCountries.map(c => ({ label: c.name, value: c.count }))} />
+            <DataCard title="Top Cities" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} data={stats.overview.topCities.map(c => ({ label: c.name, value: c.count }))} />
+
+            <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <svg className="w-5 h-5 text-indigo-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <h3 className="font-semibold">Core Web Vitals</h3>
+              </div>
+              <div className="space-y-3">
+                <MetricBar label="LCP" value={`${stats.performance.avgLCP}ms`} percentage={(parseFloat(stats.performance.avgLCP) / 4000) * 100} status={parseFloat(stats.performance.avgLCP) < 2500 ? 'good' : parseFloat(stats.performance.avgLCP) < 4000 ? 'average' : 'poor'} />
+                <MetricBar label="FID" value={`${stats.performance.avgFID}ms`} percentage={(parseFloat(stats.performance.avgFID) / 300) * 100} status={parseFloat(stats.performance.avgFID) < 100 ? 'good' : parseFloat(stats.performance.avgFID) < 300 ? 'average' : 'poor'} />
+                <MetricBar label="CLS" value={stats.performance.avgCLS} percentage={(parseFloat(stats.performance.avgCLS) / 0.25) * 100} status={parseFloat(stats.performance.avgCLS) < 0.1 ? 'good' : parseFloat(stats.performance.avgCLS) < 0.25 ? 'average' : 'poor'} />
+                <MetricBar label="Load Time" value={`${stats.performance.avgLoadTime}ms`} percentage={(parseFloat(stats.performance.avgLoadTime) / 5000) * 100} status={parseFloat(stats.performance.avgLoadTime) < 3000 ? 'good' : parseFloat(stats.performance.avgLoadTime) < 5000 ? 'average' : 'poor'} />
+              </div>
+            </div>
+          </div>
+
+          {/* Conversions & Top Pages */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <svg className="w-5 h-5 text-indigo-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="font-semibold">Goal Conversions</h3>
+              </div>
+              <div className="space-y-4">
+                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>} label="CV Downloads" value={stats.conversions.downloads} />
+                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>} label="Contact Submissions" value={stats.conversions.contactSubmissions} />
+                <ConversionRow icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>} label="Social Link Clicks" value={stats.conversions.socialClicks} />
+              </div>
+            </div>
+
+            <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <svg className="w-5 h-5 text-indigo-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3 className="font-semibold">Top Pages</h3>
+              </div>
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {stats.topPages.slice(0, 10).map((page, index) => (
+                  <div key={index} className="flex items-center justify-between py-2 border-b border-gray-light-1/10 last:border-0">
+                    <span className="text-gray-light-2 text-sm truncate flex-1">{page.path || '/'}</span>
+                    <span className="text-indigo-light font-semibold ml-4">{page.views}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </>
+  );
+};
+
+const StatCard = ({ icon, title, value, change }) => (
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6 hover:border-indigo-light/30 transition-colors">
+    <div className="flex items-center justify-between mb-4">
+      <div className="p-3 bg-black/50 rounded-lg text-indigo-light">{icon}</div>
+    </div>
+    <h3 className="text-gray-light-3 text-sm mb-1">{title}</h3>
+    <p className="text-2xl font-bold text-white mb-1">{value}</p>
+    <p className="text-gray-light-3 text-xs">{change}</p>
+  </motion.div>
+);
+
+const ChartCard = ({ title, icon, children }) => (
+  <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
+    <div className="flex items-center gap-2 mb-4">
+      <div className="text-indigo-light">{icon}</div>
+      <h3 className="font-semibold">{title}</h3>
+    </div>
+    {children}
+  </div>
+);
+
+const DataCard = ({ title, icon, data }) => (
+  <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-6">
+    <div className="flex items-center gap-2 mb-4">
+      <div className="text-indigo-light">{icon}</div>
+      <h3 className="font-semibold">{title}</h3>
+    </div>
+    <div className="space-y-2">
+      {data.map((item, index) => (
+        <div key={index} className="flex items-center justify-between py-2 border-b border-gray-light-1/10 last:border-0">
+          <span className="text-gray-light-2 text-sm truncate flex-1">{item.label}</span>
+          <span className="text-indigo-light font-semibold ml-4">{item.value}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const MetricBar = ({ label, value, percentage, status }) => {
+  const statusColors = { good: 'bg-green-400', average: 'bg-yellow-400', poor: 'bg-red-400' };
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-sm text-gray-light-2">{label}</span>
+        <span className="text-sm font-semibold">{value}</span>
+      </div>
+      <div className="w-full bg-black/50 rounded-full h-2">
+        <div className={`h-2 rounded-full ${statusColors[status]}`} style={{ width: `${Math.min(percentage, 100)}%` }} />
       </div>
     </div>
   );
 };
 
-const StatCard = ({ title, value, icon, delay }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay }}
-    whileHover={{ scale: 1.05, y: -5 }}
-    className="bg-gray-900 rounded-lg p-6 border border-gray-800 hover:border-indigo-light/30 transition-all duration-300"
-  >
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-gray-400 text-sm mb-1">{title}</p>
-        <p className="text-3xl font-bold text-white">{value}</p>
-      </div>
-      <span className="text-4xl">{icon}</span>
+const ConversionRow = ({ icon, label, value }) => (
+  <div className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+    <div className="flex items-center gap-3">
+      <div className="text-indigo-light">{icon}</div>
+      <span className="text-gray-light-2">{label}</span>
     </div>
-  </motion.div>
+    <span className="text-xl font-bold text-white">{value}</span>
+  </div>
 );
 
-export default AnalyticsDashboard;
+export default Dashboard;

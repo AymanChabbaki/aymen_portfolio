@@ -43,6 +43,10 @@ export const MENULINKS = [
     name: "Contact",
     ref: "contact",
   },
+  {
+    name: "Feedback",
+    ref: "feedback",
+  },
 ];
 
 export const TYPED_STRINGS = [
@@ -122,39 +126,48 @@ export const SKILLS = {
 };
 
 export const PROJECTS = [
-  {
-    name: "IQAMATI Platform",
-    imageKey: "iqamati",
-    descriptionKey: "projectIqamati",
-    gradient: ["#667eea", "#764ba2"],
-    url: "https://github.com/AymanChabbaki/i9amati",
-    tech: ["react", "express", "mongodb", "nodejs"],
+    {
+    name: "AI & DEV Community",
+    imageKey: "ai-dev-community",
+    descriptionKey: "projectAiDevCommunity",
+    gradient: ["#4facfe", "#00f2fe"],
+    url: "https://aidevcommunity.vercel.app",
+    tech: ["react", "nodejs", "mongodb", "express"],
+  },
+
+   {
+    name: "Safaria",
+    imageKey: "safaria",
+    descriptionKey: "projectTravelMoroccoApp",
+    gradient: ["#fdcbf1", "#e6dee9"],
+    url: "https://safaria212.vercel.app/",
+    tech: ["react", "nodejs"],
   },
   {
     name: "AI Détection Panneaux",
     imageKey: "traffic-signs",
     descriptionKey: "projectTrafficSigns",
     gradient: ["#f093fb", "#f5576c"],
-    url: "https://github.com/AymanChabbaki/ai_detection_panneaux",
+    url: "https://www.linkedin.com/posts/ayman-chabbaki_technicalsheet-trafficsignai-yolov8-activity-7354168491375050752-zu4K?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEiTS2ABse17sR9pA0z3LLxYSe0-a6_Tx0k",
     tech: ["python", "tensorflow", "yolo", "opencv"],
   },
   {
-    name: "AI & DEV Community",
-    imageKey: "ai-dev-community",
-    descriptionKey: "projectAiDevCommunity",
-    gradient: ["#4facfe", "#00f2fe"],
-    url: "https://github.com/AymanChabbaki",
-    tech: ["react", "nodejs", "mongodb", "express"],
+    name: "Football Prediction",
+    imageKey: "football-prediction",
+    descriptionKey: "projectFootballPrediction",
+    gradient: ["#a8edea", "#fed6e3"],
+    url: "https://scorematch.chabbaki.tech/",
+    tech: ["python", "flask", "react", "machine-learning"],
   },
   {
-    name: "Career Manager Agent",
-    imageKey: "career-agent",
-    descriptionKey: "projectCareerAgent",
-    gradient: ["#43e97b", "#38f9d7"],
-    url: "https://github.com/AymanChabbaki/My_Career_Coach_agent",
-    tech: ["python", "machine-learning", "nlp", "flask"],
+    name: "Car Price Prediction",
+    imageKey: "car-price",
+    descriptionKey: "projectCarPrice",
+    gradient: ["#ff9a9e", "#fecfef"],
+    url: "https://carprice.chabbaki.tech/",
+    tech: ["python", "flask", "react", "machine-learning"],
   },
-  {
+    {
     name: "SkillBridge Platform",
     imageKey: "skillbridge",
     descriptionKey: "projectSkillbridge",
@@ -162,6 +175,7 @@ export const PROJECTS = [
     url: "https://github.com/AymanChabbaki/SkillBridge-Pro",
     tech: ["react", "nodejs", "mongodb", "express"],
   },
+ 
   {
     name: "Gestion Pilotage",
     imageKey: "gestion-pilotage",
@@ -170,21 +184,29 @@ export const PROJECTS = [
     url: "https://github.com/AymanChabbaki/gestion_pilotage",
     tech: ["react", "nodejs", "mongodb"],
   },
-  {
-    name: "Football Prediction",
-    imageKey: "football-prediction",
-    descriptionKey: "projectFootballPrediction",
-    gradient: ["#a8edea", "#fed6e3"],
-    url: "https://github.com/AymanChabbaki/PredictionFootBalll",
-    tech: ["python", "flask", "react", "machine-learning"],
+   {
+    name: "CCIS Vision",
+    imageKey: "ccis-vision",
+    descriptionKey: "projectGestionDataExcel",
+    gradient: ["#fdcbf1", "#e6dee9"],
+    url: "https://ccis-vision.vercel.app/",
+    tech: ["react", "nodejs"],
   },
-  {
-    name: "Car Price Prediction",
-    imageKey: "car-price",
-    descriptionKey: "projectCarPrice",
-    gradient: ["#ff9a9e", "#fecfef"],
-    url: "https://github.com/AymanChabbaki/PFM",
-    tech: ["python", "flask", "react", "machine-learning"],
+    {
+    name: "IQAMATI Platform",
+    imageKey: "iqamati",
+    descriptionKey: "projectIqamati",
+    gradient: ["#667eea", "#764ba2"],
+    url: "https://github.com/AymanChabbaki/i9amati",
+    tech: ["react", "express", "mongodb", "nodejs"],
+  },
+      {
+    name: "Ancestry Prediction",
+    imageKey: "ancestry-prediction",
+    descriptionKey: "projectAncestryPrediction",
+    gradient: ["#fdcbf1", "#e6dee9"],
+    url: "https://www.linkedin.com/posts/ayman-chabbaki_machinelearning-deeplearning-computervision-activity-7408960062699761664-FI7C?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEiTS2ABse17sR9pA0z3LLxYSe0-a6_Tx0k",
+    tech: ["tensorflow", "flask"],
   },
   {
     name: "Gestion Recrutement",
@@ -199,25 +221,45 @@ export const PROJECTS = [
     imageKey: "team-most-like-series",
     descriptionKey: "projectTeamSeries",
     gradient: ["#e0c3fc", "#8ec5fc"],
-    url: "https://github.com/AymanChabbaki/team-most-likes-series",
+    url: "https://www.linkedin.com/posts/ayman-chabbaki_hackathon-4uflix-teamwork-activity-7354918435027386368-RgDG?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEiTS2ABse17sR9pA0z3LLxYSe0-a6_Tx0k",
     tech: ["react", "streaming"],
   },
-  {
-    name: "Chat Atlas App",
-    imageKey: "chat-atlas",
-    descriptionKey: "projectChatAtlas",
-    gradient: ["#fbc2eb", "#a6c1ee"],
-    url: "https://github.com/AymanChabbaki/atlaschat",
-    tech: ["flutter", "firebase"],
-  },
-  {
-    name: "IPTV Spanish Website",
-    imageKey: "iptv-spanish",
-    descriptionKey: "projectIptv",
+     {
+    name: "MyElectronicShop",
+    imageKey: "my-electronic-shop",
+    descriptionKey: "projectMyElectronicShop",
     gradient: ["#fdcbf1", "#e6dee9"],
-    url: "https://github.com/AymanChabbaki/maxtv-frond",
-    tech: ["react", "nodejs"],
+    url: "https://www.linkedin.com/posts/ayman-chabbaki_freelance-vbnet-winforms-activity-7378834124142288896-iNo3?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEiTS2ABse17sR9pA0z3LLxYSe0-a6_Tx0k",
+    tech: ["vbnet", "sqlserver"],
   },
+ 
+  {
+    name: "Crypto",
+    imageKey: "crypto",
+    descriptionKey: "projectCryptoApp",
+    gradient: ["#fdcbf1", "#e6dee9"],
+    url: "#",
+    tech: ["react"],
+  },
+   {
+    name: "Career Manager Agent",
+    imageKey: "career-agent",
+    descriptionKey: "projectCareerAgent",
+    gradient: ["#43e97b", "#38f9d7"],
+    url: "https://www.linkedin.com/posts/ayman-chabbaki_ai-llm-edtech-activity-7373816431525699584-WhoQ?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEiTS2ABse17sR9pA0z3LLxYSe0-a6_Tx0k",
+    tech: ["python", "machine-learning", "nlp", "flask"],
+  },
+
+      {
+    name: "Blind Weather prediction",
+    imageKey: "blind-weather-prediction",
+    descriptionKey: "projectBlindWeatherPrediction",
+    gradient: ["#fdcbf1", "#e6dee9"],
+    url: "https://www.linkedin.com/posts/ayman-chabbaki_artificialintelligence-accessibility-deeplearning-activity-7394449420110569473-visZ?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEiTS2ABse17sR9pA0z3LLxYSe0-a6_Tx0k",
+    tech: ["keras", "machine-learning", "flask"],
+  },
+
+  
 ];
 
 export const WORK_CONTENTS = {

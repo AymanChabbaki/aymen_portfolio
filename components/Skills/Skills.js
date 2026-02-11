@@ -83,6 +83,12 @@ const Skills = () => {
                     rotate: 360,
                     transition: { duration: 0.3 }
                   }}
+                  drag
+                  dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
+                  dragElastic={0.7}
+                  dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+                  whileDrag={{ scale: 1.3, cursor: "grabbing" }}
+                  style={{ cursor: "grab" }}
                 >
                   <Image
                     src={`/skills/${skill}.svg`}
@@ -114,6 +120,12 @@ const Skills = () => {
                     y: -10,
                     transition: { duration: 0.2 }
                   }}
+                  drag
+                  dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
+                  dragElastic={0.7}
+                  dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+                  whileDrag={{ scale: 1.3, cursor: "grabbing" }}
+                  style={{ cursor: "grab" }}
                 >
                   <Image
                     src={`/skills/${skill}.svg`}
@@ -142,6 +154,12 @@ const Skills = () => {
                       delay: index * 0.1,
                       type: "spring"
                     }}
+                    drag
+                    dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
+                    dragElastic={0.7}
+                    dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+                    whileDrag={{ scale: 1.3, cursor: "grabbing" }}
+                    style={{ cursor: "grab" }}
                     whileHover={{ 
                       scale: 1.2,
                       rotate: 360,
@@ -174,6 +192,12 @@ const Skills = () => {
                       duration: 0.4, 
                       delay: index * 0.08
                     }}
+                    drag
+                    dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
+                    dragElastic={0.7}
+                    dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+                    whileDrag={{ scale: 1.3, cursor: "grabbing" }}
+                    style={{ cursor: "grab" }}
                     whileHover={{ 
                       scale: 1.3,
                       rotate: [0, -10, 10, 0],

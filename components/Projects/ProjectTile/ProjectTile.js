@@ -19,7 +19,7 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
   const projectCard = useRef(null);
   const { language } = useLanguage();
 
-  const { name, imageKey, descriptionKey, gradient, url, tech } = project;
+  const { name, imageKey, descriptionKey, url, tech } = project;
 
   const image = PROJECT_IMAGES[imageKey];
   const description = getTranslation(language, descriptionKey);
@@ -40,29 +40,30 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5 }}
-      whileHover={{ scale: 1.02 }}
-      className={`overflow-hidden rounded-3xl snap-start link ${additionalClasses}`}
+      whileHover={{ 
+        scale: 1.05, 
+        rotateY: 5,
+        rotateX: 5,
+        transition: { duration: 0.3 }
+      }}
+      className={`overflow-hidden rounded-3xl snap-start link group ${additionalClasses}`}
       target="_blank"
       rel="noreferrer"
       style={{
         maxWidth: isDesktop ? "calc(100vw - 2rem)" : "calc(100vw - 4rem)",
         flex: "1 0 auto",
-        WebkitMaskImage: "-webkit-radial-gradient(white, black)",
+        WebkitMaskImage: "-webkit-radial-gradient(white, black)"
       }}
     >
       <div
         ref={projectCard}
-        className={`${styles.projectTile} rounded-3xl relative p-6 flex flex-col justify-between max-w-full`}
+        className={`${styles.projectTile} rounded-3xl relative flex flex-col justify-end max-w-full p-0`}
         style={{
-          background: `linear-gradient(90deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`,
+          background: "none",
+          height: "100%",
+          width: "100%"
         }}
       >
-        <Image
-          src="/project-bg.svg"
-          alt="project"
-          className="absolute w-full h-full top-0 left-0 opacity-20 rounded-3xl"
-          fill
-        />
         {image && (
           <Image
             src={image}
@@ -70,46 +71,28 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
             placeholder="blur"
             fill
             className={styles.projectImage}
+            style={{ position: "absolute", inset: 0, zIndex: 0, borderRadius: "1.5rem", objectFit: "cover" }}
           />
         )}
-        {!isDesktop && (
-          <div
-            className="absolute bottom-0 left-0 w-full h-20"
-            style={{
-              background: `linear-gradient(0deg, ${gradient[0]} 10%, rgba(0,0,0,0) 100%)`,
-            }}
-          />
-        )}
-        <h1
-          className="font-medium text-2xl sm:text-3xl z-10 pl-2 pt-2 transform-gpu"
-          style={{ transform: "translateZ(3rem)" }}
-        >
-          {name}
-        </h1>
-        <div
-          className={`
-            ${styles.techIcons} w-1/2 h-full absolute left-24 top-0 sm:flex items-center hidden
-          `}
-        >
-          <div className="flex flex-col pb-8">
+        {/* Overlay for dark smoke, appears only on hover */}
+        <div className="absolute inset-0 z-10 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
+        <div className="relative z-20 flex flex-col justify-end h-full w-full p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          <h2 className="text-lg tracking-wide font-semibold text-white drop-shadow-md bg-black/70 rounded-xl px-4 py-2 mb-4 w-fit self-start shadow-lg">
+            {description}
+          </h2>
+          <div className="flex flex-row gap-3 flex-wrap">
             {tech.map((el, i) => (
               <Image
-                className={`${i % 2 === 0 && "ml-16"} mb-4`}
+                className="bg-white/80 rounded-lg p-1 shadow-md"
                 src={`/projects/tech/${el}.svg`}
                 alt={el}
-                height={45}
-                width={45}
+                height={32}
+                width={32}
                 key={el}
               />
             ))}
           </div>
         </div>
-        <h2
-          className="text-lg z-10 tracking-wide font-medium text-white transform-gpu"
-          style={{ transform: "translateZ(0.8rem)" }}
-        >
-          {description}
-        </h2>
       </div>
     </motion.a>
   );
