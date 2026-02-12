@@ -18,16 +18,16 @@ export default async function handler(req, res) {
     const daysAgo = timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
     const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
 
-    // 1. Total visitors (unique visitor_ids)
-    const { data: totalVisitors, error: visitorsError } = await supabase
-      .from('page_views')
-      .select('visitor_id')
-      .gte('created_at', startDate.toISOString());
+    // 1. Total unique sessions and visitors (not counting refreshes)
+    const { data: sessionsData, error: sessionsDataError } = await supabase
+      .from('sessions')
+      .select('id, visitor_id')
+      .gte('start_time', startDate.toISOString());
 
-    if (visitorsError) throw visitorsError;
+    if (sessionsDataError) throw sessionsDataError;
 
-    const uniqueVisitors = new Set(totalVisitors?.map(v => v.visitor_id) || []).size;
-    const totalPageViews = totalVisitors?.length || 0;
+    const uniqueVisitors = new Set(sessionsData?.map(s => s.visitor_id) || []).size;
+    const totalSessions = sessionsData?.length || 0;
 
     // 2. New vs Returning visitors
     const { data: sessions, error: sessionsError } = await supabase
@@ -40,20 +40,24 @@ export default async function handler(req, res) {
     const newVisitors = sessions?.filter(s => s.is_new_visitor).length || 0;
     const returningVisitors = sessions?.filter(s => !s.is_new_visitor).length || 0;
 
-    // 3. Top countries/cities
+    // 3. Top countries/cities (unique sessions only, not page views)
     const { data: locations, error: locationsError } = await supabase
-      .from('page_views')
+      .from('sessions')
       .select('country, city')
-      .gte('created_at', startDate.toISOString());
+      .gte('start_time', startDate.toISOString());
 
     if (locationsError) throw locationsError;
 
     const countryCounts = {};
     const cityCounts = {};
     locations?.forEach(loc => {
-      countryCounts[loc.country] = (countryCounts[loc.country] || 0) + 1;
-      const cityKey = `${loc.city}, ${loc.country}`;
-      cityCounts[cityKey] = (cityCounts[cityKey] || 0) + 1;
+      if (loc.country && loc.country !== 'Unknown') {
+        countryCounts[loc.country] = (countryCounts[loc.country] || 0) + 1;
+      }
+      if (loc.city && loc.city !== 'Unknown') {
+        const cityKey = `${loc.city}, ${loc.country}`;
+        cityCounts[cityKey] = (cityCounts[cityKey] || 0) + 1;
+      }
     });
 
     const topCountries = Object.entries(countryCounts)
@@ -66,11 +70,11 @@ export default async function handler(req, res) {
       .slice(0, 5)
       .map(([name, count]) => ({ name, count }));
 
-    // 4. Traffic sources
+    // 4. Traffic sources (unique sessions only)
     const { data: trafficSources, error: trafficError } = await supabase
-      .from('page_views')
+      .from('sessions')
       .select('referrer, utm_source, utm_medium')
-      .gte('created_at', startDate.toISOString());
+      .gte('start_time', startDate.toISOString());
 
     if (trafficError) throw trafficError;
 
@@ -87,11 +91,11 @@ export default async function handler(req, res) {
       }
     });
 
-    // 5. Device & Browser stats
+    // 5. Device & Browser stats (unique sessions only)
     const { data: devices, error: devicesError } = await supabase
-      .from('page_views')
+      .from('sessions')
       .select('device_type, browser')
-      .gte('created_at', startDate.toISOString());
+      .gte('start_time', startDate.toISOString());
 
     if (devicesError) throw devicesError;
 
@@ -169,23 +173,27 @@ export default async function handler(req, res) {
       ? (perfMetrics.reduce((sum, p) => sum + (p.load_time || 0), 0) / perfMetrics.length).toFixed(0)
       : 0;
 
-    // 9. Traffic by page
+    // 9. Traffic by page (unique page views per session)
     const { data: pageTraffic, error: pageTrafficError } = await supabase
       .from('page_views')
-      .select('page_path')
+      .select('page_path, session_id')
       .gte('created_at', startDate.toISOString());
 
     if (pageTrafficError) throw pageTrafficError;
 
-    const pageCounts = {};
+    // Count unique sessions per page (not total views)
+    const pageSessionsMap = {};
     pageTraffic?.forEach(p => {
-      pageCounts[p.page_path] = (pageCounts[p.page_path] || 0) + 1;
+      if (!pageSessionsMap[p.page_path]) {
+        pageSessionsMap[p.page_path] = new Set();
+      }
+      pageSessionsMap[p.page_path].add(p.session_id);
     });
 
-    const topPages = Object.entries(pageCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([path, views]) => ({ path, views }));
+    const topPages = Object.entries(pageSessionsMap)
+      .map(([path, sessions]) => ({ path, views: sessions.size }))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 10);
 
     // 10. Error rate
     const { data: errors, error: errorsError } = await supabase
@@ -196,30 +204,30 @@ export default async function handler(req, res) {
     if (errorsError) throw errorsError;
 
     const errorCount = errors?.length || 0;
-    const errorRate = totalPageViews > 0 ? ((errorCount / totalPageViews) * 100).toFixed(2) : 0;
+    const errorRate = totalSessions > 0 ? ((errorCount / totalSessions) * 100).toFixed(2) : 0;
 
-    // 11. Daily trends (for charts)
-    const { data: dailyViews, error: dailyError } = await supabase
-      .from('page_views')
-      .select('created_at')
-      .gte('created_at', startDate.toISOString())
-      .order('created_at', { ascending: true });
+    // 11. Daily trends (for charts - unique sessions per day)
+    const { data: dailySessions, error: dailyError } = await supabase
+      .from('sessions')
+      .select('start_time, id')
+      .gte('start_time', startDate.toISOString())
+      .order('start_time', { ascending: true });
 
     if (dailyError) throw dailyError;
 
     const dailyTrends = {};
-    dailyViews?.forEach(view => {
-      const date = new Date(view.created_at).toISOString().split('T')[0];
+    dailySessions?.forEach(session => {
+      const date = new Date(session.start_time).toISOString().split('T')[0];
       dailyTrends[date] = (dailyTrends[date] || 0) + 1;
     });
 
-    const trendsData = Object.entries(dailyTrends).map(([date, views]) => ({ date, views }));
+    const trendsData = Object.entries(dailyTrends).map(([date, sessions]) => ({ date, sessions }));
 
     // Return all stats
     res.status(200).json({
       overview: {
         totalVisitors: uniqueVisitors,
-        totalPageViews,
+        totalSessions,
         newVisitors,
         returningVisitors,
         topCountries,

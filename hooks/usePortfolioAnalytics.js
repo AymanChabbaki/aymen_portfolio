@@ -85,29 +85,37 @@ const usePortfolioAnalytics = () => {
 
     pageCountRef.current += 1;
 
-    try {
-      await fetch('/api/analytics/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'pageview',
-          sessionId,
-          visitorId,
-          data: {
-            pagePath: path,
-            pageTitle: document.title,
-            referrer: document.referrer,
-            ...utm,
-            deviceType: getDeviceType(),
-            browser: getBrowser(),
-            os: getOS(),
-            screenWidth: window.screen.width,
-            screenHeight: window.screen.height
-          }
-        })
-      });
-    } catch (error) {
-      console.error('Failed to track page view:', error);
+    // Only track if this is the first page view of the session or a navigation (not a refresh)
+    const lastTrackedPath = sessionStorage.getItem('last_tracked_path');
+    const isNewNavigation = lastTrackedPath !== path;
+    
+    if (isNewNavigation) {
+      sessionStorage.setItem('last_tracked_path', path);
+      
+      try {
+        await fetch('/api/analytics/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'pageview',
+            sessionId,
+            visitorId,
+            data: {
+              pagePath: path,
+              pageTitle: document.title,
+              referrer: document.referrer,
+              ...utm,
+              deviceType: getDeviceType(),
+              browser: getBrowser(),
+              os: getOS(),
+              screenWidth: window.screen.width,
+              screenHeight: window.screen.height
+            }
+          })
+        });
+      } catch (error) {
+        console.error('Failed to track page view:', error);
+      }
     }
   };
 

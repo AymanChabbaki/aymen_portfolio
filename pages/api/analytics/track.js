@@ -9,6 +9,15 @@ async function getGeolocation(req) {
   // Try Vercel headers first (production)
   let country = req.headers['x-vercel-ip-country'];
   let city = req.headers['x-vercel-ip-city'];
+  
+  // Decode URL-encoded city names from Vercel headers
+  if (city) {
+    try {
+      city = decodeURIComponent(city);
+    } catch (e) {
+      // If decode fails, use as-is
+    }
+  }
 
   // If not available (local development), use ip-api.com as fallback
   if (!country || country === 'Unknown') {
