@@ -91,11 +91,14 @@ const Contact = () => {
     // Track form submission with old analytics
     trackFormSubmission('contact', { name, hasEmail: !!email, messageLength: message.length });
     
-    // Track with new analytics system
+    // Track with new analytics system (include form data so contacts list shows submitter info)
     trackEvent('contact_submit', { 
-      hasName: !!name, 
-      hasEmail: !!email, 
-      messageLength: message.length 
+      name: name || null,
+      email: email || null,
+      message: message || null,
+      hasName: !!name,
+      hasEmail: !!email,
+      messageLength: message.length
     });
     
     mail({ name, email, message })
