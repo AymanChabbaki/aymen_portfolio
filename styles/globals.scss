@@ -11,6 +11,17 @@
   cursor: none;
 }
 
+/* Utility: force-hide on mobile, show on lg+ */
+.mobile-hide {
+  display: none !important;
+}
+
+@media (min-width: 1024px) {
+  .mobile-hide {
+    display: block !important;
+  }
+}
+
 html {
   scroll-behavior: smooth;
   -ms-overflow-style: scrollbar;

@@ -68,7 +68,7 @@ const Hero = () => {
     <section
       ref={sectionRef}
       id={MENULINKS[0].ref}
-      className="w-full flex md:items-center py-8 2xl:container mx-auto xl:px-20 md:px-12 px-4 min-h-screen relative mb-24"
+      className="w-full flex md:items-center py-8 2xl:container mx-auto xl:px-20 md:px-12 px-4 lg:min-h-screen relative mb-24"
       style={{ opacity: 0 }}
     >
       <style global jsx>
@@ -184,7 +184,7 @@ const Hero = () => {
           rotate: [0, -5, 5, -5, 5, 0],
           transition: { duration: 0.5 }
         }}
-        className="absolute hidden lg:block lg:right-12 2xl:right-16 bottom-8"
+        className="absolute hidden lg:block lg:right-12 2xl:right-16 bottom-8 mobile-hide"
       >
         <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-indigo-light shadow-2xl hover:shadow-indigo-light/50 transition-shadow duration-300">
           <Image

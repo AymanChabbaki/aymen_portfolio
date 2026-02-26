@@ -192,7 +192,7 @@ const Dashboard = () => {
             * { cursor: auto !important; }
           `}</style>
         </Head>
-        <div className="min-h-screen bg-black flex items-center justify-center px-4">
+        <div className="lg:min-h-screen bg-black flex items-center justify-center px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full">
             <div className="bg-gray-dark border border-gray-light-1/20 rounded-lg p-8">
               <div className="flex items-center justify-center mb-6">
@@ -239,7 +239,7 @@ const Dashboard = () => {
             * { cursor: auto !important; }
           `}</style>
         </Head>
-        <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="lg:min-h-screen bg-black flex items-center justify-center">
         <div className="text-white">Loading analytics...</div>
       </div>
       </>
@@ -257,7 +257,7 @@ const Dashboard = () => {
           select option { background-color: #1a1a1a; color: white; }
         `}</style>
       </Head>
-      <div className="min-h-screen bg-black text-white p-4 md:p-6">
+      <div className="lg:min-h-screen bg-black text-white p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           {/*(Rest of dashboard JSX from previous version - continued in next part)*/}
           {/* Header */}
