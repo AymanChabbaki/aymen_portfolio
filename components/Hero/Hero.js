@@ -186,12 +186,12 @@ const Hero = () => {
         }}
         className="absolute hidden lg:block lg:right-12 2xl:right-16 bottom-8 mobile-hide"
       >
-        <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-indigo-light shadow-2xl hover:shadow-indigo-light/50 transition-shadow duration-300">
+        <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-indigo-light shadow-2xl hover:shadow-indigo-light/50 transition-shadow duration-300 mobile-hide">
           <Image
             src="/me.jpeg"
             alt="Ayman Chabbaki"
             fill
-            className="object-cover"
+            className="object-cover mobile-hide"
             priority
           />
         </div>
