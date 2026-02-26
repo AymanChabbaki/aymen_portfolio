@@ -184,7 +184,7 @@ const Hero = () => {
           rotate: [0, -5, 5, -5, 5, 0],
           transition: { duration: 0.5 }
         }}
-        className="absolute invisible lg:visible lg:right-12 2xl:right-16 bottom-8"
+        className="absolute hidden lg:block lg:right-12 2xl:right-16 bottom-8"
       >
         <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-indigo-light shadow-2xl hover:shadow-indigo-light/50 transition-shadow duration-300">
           <Image
