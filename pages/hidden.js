@@ -296,6 +296,7 @@ const Dashboard = () => {
                 <option value="7d" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 7 Days</option>
                 <option value="30d" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 30 Days</option>
                 <option value="90d" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>Last 90 Days</option>
+                <option value="all" style={{ backgroundColor: '#1a1a1a', color: 'white' }}>All Time</option>
               </select>
 
               <button onClick={exportData} className="px-4 py-2 bg-gray-dark border border-gray-light-1/20 rounded-lg hover:border-indigo-light/30 transition-colors flex items-center gap-2" title="Export Data">

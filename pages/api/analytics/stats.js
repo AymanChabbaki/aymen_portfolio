@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     
     // Calculate date range
     const now = new Date();
-    const daysAgo = timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
+    const daysAgo = timeRange === 'all' ? 36500 : timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
     const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
 
     // 1. Total unique sessions and visitors (not counting refreshes)
