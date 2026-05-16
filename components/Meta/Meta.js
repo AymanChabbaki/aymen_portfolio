@@ -56,7 +56,7 @@ const Meta = () => (
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="msapplication-TileColor" content="#7000FF" />
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="/site.webmanifest" />
   </Head>
 );
 
