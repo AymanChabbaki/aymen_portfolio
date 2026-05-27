@@ -15,6 +15,7 @@ const Hero = () => {
   const typedElementRef = useRef(null);
   const { language } = useLanguage();
   const typedInstanceRef = useRef(null);
+  const [isPortraitHovered, setIsPortraitHovered] = useState(false);
 
   const getTypedStrings = () => [
     getTranslation(language, 'typedString1'),
@@ -188,11 +189,13 @@ const Hero = () => {
       >
         <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-indigo-light shadow-2xl hover:shadow-indigo-light/50 transition-shadow duration-300 mobile-hide">
           <Image
-            src="/me.jpeg"
-            alt="Ayman Chabbaki"
+            src={isPortraitHovered ? "/3d_2.png" : "/3d_1.png"}
+            alt="3D portrait"
             fill
             className="object-cover mobile-hide"
             priority
+            onMouseEnter={() => setIsPortraitHovered(true)}
+            onMouseLeave={() => setIsPortraitHovered(false)}
           />
         </div>
       </motion.div>
