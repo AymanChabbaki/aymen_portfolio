@@ -23,6 +23,7 @@ const ScrollingChatbot = () => {
   const [showMessage, setShowMessage] = useState(false); // Toggle message bubble visibility
   const [isDragging, setIsDragging] = useState(false); // Track if user is dragging the chatbot
   const [hasBeenDragged, setHasBeenDragged] = useState(false); // Track if chatbot was manually moved
+  const [isIconHovered, setIsIconHovered] = useState(false); // Track chatbot icon hover state
   const controls = useAnimation(); // Animation controller for playful movements
   const playfulInterval = useRef(null); // Reference to interval for random movements
   
@@ -252,6 +253,8 @@ const ScrollingChatbot = () => {
           className="relative w-20 h-20"
           whileHover={{ scale: 1.1, rotate: 5 }} // Slight grow and tilt on hover
           whileTap={{ scale: 0.95 }} // Shrink on click
+          onMouseEnter={() => setIsIconHovered(true)}
+          onMouseLeave={() => setIsIconHovered(false)}
           onClick={(e) => {
             // Click to show message on demand (only if not dragging)
             e.stopPropagation();
@@ -265,10 +268,10 @@ const ScrollingChatbot = () => {
           {/* Animated glow behind the chatbot for visual appeal */}
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-light/20 to-purple-500/20 rounded-full blur-xl animate-pulse pointer-events-none" />
           
-          {/* icc.png image */}
+          {/* 3D chatbot image */}
           <div className="relative w-20 h-20 rounded-full overflow-hidden bg-white border-2 border-indigo-light shadow-xl">
             <Image
-              src="/icc.png"
+              src={isIconHovered ? "/3d_2.png" : "/3d_1.png"}
               alt="Chatbot Assistant"
               width={80}
               height={80}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { useEffect, useRef, useLayoutEffect } from "react";
 import Image from "next/image";
 import Typed from "typed.js";
 import gsap from "gsap";
@@ -15,7 +15,6 @@ const Hero = () => {
   const typedElementRef = useRef(null);
   const { language } = useLanguage();
   const typedInstanceRef = useRef(null);
-  const [isPortraitHovered, setIsPortraitHovered] = useState(false);
 
   const getTypedStrings = () => [
     getTranslation(language, 'typedString1'),
@@ -189,13 +188,11 @@ const Hero = () => {
       >
         <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-indigo-light shadow-2xl hover:shadow-indigo-light/50 transition-shadow duration-300 mobile-hide">
           <Image
-            src={isPortraitHovered ? "/3d_2.png" : "/3d_1.png"}
-            alt="3D portrait"
+            src="/me.jpeg"
+            alt="Ayman Chabbaki"
             fill
             className="object-cover mobile-hide"
             priority
-            onMouseEnter={() => setIsPortraitHovered(true)}
-            onMouseLeave={() => setIsPortraitHovered(false)}
           />
         </div>
       </motion.div>
