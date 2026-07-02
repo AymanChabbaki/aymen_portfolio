@@ -14,6 +14,7 @@ import { useKonamiCode } from "../hooks/useKonamiCode";
 import { useConfetti } from "../hooks/useConfetti";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { MotionConfig } from "framer-motion";
 
 const App = ({ Component, pageProps }) => {
   const { fireRocket } = useConfetti();
@@ -37,6 +38,7 @@ const App = ({ Component, pageProps }) => {
   });
 
   return (
+    <MotionConfig reducedMotion="user">
     <LanguageProvider>
       <Meta />
       <main
@@ -78,6 +80,7 @@ const App = ({ Component, pageProps }) => {
         )}
       </main>
     </LanguageProvider>
+    </MotionConfig>
   );
 };
 

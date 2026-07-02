@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/dist/ScrollTrigger";
 import Loader from "@/components/Loader/Loader";
@@ -8,12 +9,17 @@ import Menu from "@/components/Header/Menu/Menu";
 import ProgressIndicator from "@/components/ProgressIndicator/ProgressIndicator";
 import Cursor from "@/components/Cursor/Cursor";
 import VerticalEmail from "@/components/VerticalEmail/VerticalEmail";
+import AmbientBackground from "@/components/AmbientBackground/AmbientBackground";
+import CommandPalette from "@/components/CommandPalette/CommandPalette";
 import Hero from "@/components/Hero/Hero";
+import NowStrip from "@/components/NowStrip/NowStrip";
 import About1 from "@/components/About/About1";
 import Skills from "@/components/Skills/Skills";
+import Bento from "@/components/Bento/Bento";
 import About2 from "@/components/About/About2";
 import Projects from "@/components/Projects/Projects";
 import Work from "@/components/Work/Work";
+import Testimonials from "@/components/Testimonials/Testimonials";
 import Collaboration from "@/components/Collaboration/Collaboration";
 import Contact from "@/components/Contact/Contact";
 import Feedback from "@/components/Feedback/Feedback";
@@ -31,9 +37,16 @@ export default function Home() {
   const [clientWidth, setClientWidth] = useState(0);
 
   useEffect(() => {
-    setTimeout(() => {
+    // Returning visitors skip the loader + welcome intro entirely
+    if (Cookies.get("visited") === "true") {
       setIsLoading(false);
-    }, 2600);
+      setShowWelcome(false);
+    } else {
+      Cookies.set("visited", "true", { expires: 7 });
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2600);
+    }
 
     displayFancyLogs();
   }, []);
@@ -69,20 +82,18 @@ export default function Home() {
           <ProgressIndicator />
           <VerticalEmail />
           <Cursor isDesktop={isDesktop} />
+          <CommandPalette />
           <main className="flex flex-col">
-            <div
-              role="img"
-              className="text-gray-light-1 opacity-10 sm:text-9xl xs:text-8xl inline-block -z-10 absolute rotate-90 right-0 md:top-52 xs:top-96"
-            >
-              DEV
-            </div>
-            <div className="fixed top-0 left-0 h-screen w-screen -z-1" />
+            <AmbientBackground />
             <Hero />
+            <NowStrip />
             <About1 clientHeight={clientHeight} />
             <Skills />
+            <Bento />
             <About2 clientHeight={clientHeight} />
             <Projects isDesktop={isDesktop} clientHeight={clientHeight} />
             <Work isDesktop={isDesktop} />
+            <Testimonials />
             <Collaboration clientHeight={clientHeight} />
             <Contact />
             <Feedback />

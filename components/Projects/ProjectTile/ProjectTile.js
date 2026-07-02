@@ -1,19 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useRef, useCallback } from "react";
 import Image from "next/image";
-import VanillaTilt from "vanilla-tilt";
 import { motion } from "framer-motion";
 import styles from "./ProjectTile.module.scss";
 import { PROJECT_IMAGES } from "../images";
 import { useLanguage } from "../../../contexts/LanguageContext";
 import { getTranslation } from "../../../locales/translations";
-
-const tiltOptions = {
-  max: 5,
-  speed: 400,
-  glare: true,
-  "max-glare": 0.2,
-  gyroscope: false,
-};
 
 const ProjectTile = ({ project, classes, isDesktop }) => {
   const projectCard = useRef(null);
@@ -29,9 +20,14 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
     additionalClasses = classes;
   }
 
-  useEffect(() => {
-    VanillaTilt.init(projectCard.current, tiltOptions);
-  }, [projectCard]);
+  // Cursor-following spotlight glow
+  const handleMouseMove = useCallback((e) => {
+    const card = projectCard.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
+    card.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
+  }, []);
 
   return (
     <motion.a
@@ -40,12 +36,11 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5 }}
-      whileHover={{ 
-        scale: 1.05, 
-        rotateY: 5,
-        rotateX: 5,
-        transition: { duration: 0.3 }
+      whileHover={{
+        scale: 1.03,
+        transition: { duration: 0.3 },
       }}
+      onMouseMove={handleMouseMove}
       className={`overflow-hidden rounded-3xl snap-start link group ${additionalClasses}`}
       target="_blank"
       rel="noreferrer"
@@ -57,7 +52,7 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
     >
       <div
         ref={projectCard}
-        className={`${styles.projectTile} rounded-3xl relative flex flex-col justify-end max-w-full p-0`}
+        className={`${styles.projectTile} rounded-3xl relative flex flex-col justify-end max-w-full p-0 border border-transparent group-hover:border-indigo-light/40 transition-colors duration-300`}
         style={{
           background: "none",
           height: "100%",
@@ -76,6 +71,14 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
         )}
         {/* Overlay for dark smoke, appears only on hover */}
         <div className="absolute inset-0 z-10 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
+        {/* Spotlight glow that follows the cursor */}
+        <div
+          className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(500px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(139, 49, 255, 0.25), transparent 65%)",
+          }}
+        />
         <div className="relative z-20 flex flex-col justify-end h-full w-full p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           <h2 className="text-lg tracking-wide font-semibold text-white drop-shadow-md bg-black/70 rounded-xl px-4 py-2 mb-4 w-fit self-start shadow-lg">
             {description}

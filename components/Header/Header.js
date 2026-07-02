@@ -73,6 +73,20 @@ const Header = ({ children }) => {
         </motion.a>
         <div className="outer-menu relative flex items-center gap-8 z-[1]">
           <motion.button
+            onClick={() =>
+              window.dispatchEvent(new CustomEvent("open-command-palette"))
+            }
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            aria-label="Open command palette (Ctrl+K)"
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-mono bg-gray-dark-4 hover:bg-indigo-light/20 text-gray-light-3 hover:text-white rounded-lg transition-all duration-300 border border-gray-dark-1 hover:border-indigo-light"
+          >
+            <kbd>Ctrl</kbd>
+            <span>+</span>
+            <kbd>K</kbd>
+          </motion.button>
+          <motion.button
             onClick={handleDownloadResume}
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}

@@ -135,6 +135,58 @@ export const translations = {
     toastEmpty: "Veuillez remplir les champs requis",
     toastError: "Erreur lors de l'envoi de votre message",
     toastSuccess: "Message envoyé avec succès",
+
+    // Hero (living scene)
+    greetingMorning: "Bonjour",
+    greetingAfternoon: "Bon après-midi",
+    greetingEvening: "Bonsoir",
+    availableForWork: "Disponible pour de nouvelles opportunités",
+    basedIn: "Casablanca, Maroc",
+    localTime: "Heure locale",
+    viewProjects: "Voir mes projets",
+    scrollDown: "Défiler",
+
+    // Now strip
+    latestCommit: "Dernier commit",
+    currentlyStudying: "Master d'Excellence en IA",
+    buildingAt: "Développeur Full-Stack chez Devhermanos",
+
+    // Bento section
+    bentoLabel: "APERÇU",
+    bentoTitle: "Au-delà du code",
+    bentoSubtitle: "Quelques signaux en temps réel sur qui je suis et ce que je fais.",
+    bentoGithubTitle: "Contributions GitHub",
+    bentoStatsProjects: "Projets réalisés",
+    bentoStatsTech: "Technologies",
+    bentoStatsYears: "Années de code",
+    bentoCurrently: "En ce moment",
+    bentoLanguagesTitle: "Langues",
+    bentoLangFr: "Français",
+    bentoLangEn: "Anglais",
+    bentoLangAr: "Arabe",
+    bentoAvailability: "Ouvert aux opportunités",
+    bentoAvailabilityDesc: "Stage, freelance ou temps plein — discutons !",
+    getInTouch: "Me contacter",
+
+    // Testimonials
+    testimonialsLabel: "TÉMOIGNAGES",
+    testimonialsTitle: "Ce qu'on dit de moi",
+
+    // Command palette
+    feedback: "Commentaires",
+    palettePlaceholder: "Tapez une commande ou cherchez...",
+    paletteNavigation: "Navigation",
+    paletteActions: "Actions",
+    paletteSocials: "Réseaux",
+    paletteNoResults: "Aucun résultat",
+    cmdToggleLang: "Switch to English",
+    cmdCopyEmail: "Copier l'email",
+    cmdCopied: "Email copié !",
+    cmdDownloadCV: "Télécharger le CV",
+    paletteHintOpen: "pour ouvrir",
+    paletteHintNavigate: "naviguer",
+    paletteHintSelect: "sélectionner",
+    paletteHintClose: "fermer",
   },
   en: {
     // Navigation
@@ -272,6 +324,58 @@ export const translations = {
     toastEmpty: "Please fill the required fields",
     toastError: "Error sending your message",
     toastSuccess: "Message sent successfully",
+
+    // Hero (living scene)
+    greetingMorning: "Good morning",
+    greetingAfternoon: "Good afternoon",
+    greetingEvening: "Good evening",
+    availableForWork: "Available for new opportunities",
+    basedIn: "Casablanca, Morocco",
+    localTime: "Local time",
+    viewProjects: "View my projects",
+    scrollDown: "Scroll",
+
+    // Now strip
+    latestCommit: "Latest commit",
+    currentlyStudying: "Master's of Excellence in AI",
+    buildingAt: "Full-Stack Developer at Devhermanos",
+
+    // Bento section
+    bentoLabel: "AT A GLANCE",
+    bentoTitle: "Beyond the Code",
+    bentoSubtitle: "A few live signals about who I am and what I'm up to.",
+    bentoGithubTitle: "GitHub Contributions",
+    bentoStatsProjects: "Projects built",
+    bentoStatsTech: "Technologies",
+    bentoStatsYears: "Years of coding",
+    bentoCurrently: "Currently",
+    bentoLanguagesTitle: "Languages",
+    bentoLangFr: "French",
+    bentoLangEn: "English",
+    bentoLangAr: "Arabic",
+    bentoAvailability: "Open to opportunities",
+    bentoAvailabilityDesc: "Internship, freelance or full-time — let's talk!",
+    getInTouch: "Get in touch",
+
+    // Testimonials
+    testimonialsLabel: "TESTIMONIALS",
+    testimonialsTitle: "What People Say",
+
+    // Command palette
+    feedback: "Feedback",
+    palettePlaceholder: "Type a command or search...",
+    paletteNavigation: "Navigation",
+    paletteActions: "Actions",
+    paletteSocials: "Socials",
+    paletteNoResults: "No results",
+    cmdToggleLang: "Passer en Français",
+    cmdCopyEmail: "Copy email",
+    cmdCopied: "Email copied!",
+    cmdDownloadCV: "Download resume",
+    paletteHintOpen: "to open",
+    paletteHintNavigate: "navigate",
+    paletteHintSelect: "select",
+    paletteHintClose: "close",
   }
 };
 
