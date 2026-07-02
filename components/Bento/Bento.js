@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { FiMapPin } from "react-icons/fi";
 import SpotlightCard from "../SpotlightCard/SpotlightCard";
 import { PROJECTS, SKILLS } from "../../constants";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -45,9 +46,9 @@ const Bento = () => {
   ];
 
   const spokenLanguages = [
-    { flag: "🇲🇦", key: "bentoLangAr" },
-    { flag: "🇫🇷", key: "bentoLangFr" },
-    { flag: "🇬🇧", key: "bentoLangEn" },
+    { code: "AR", key: "bentoLangAr" },
+    { code: "FR", key: "bentoLangFr" },
+    { code: "EN", key: "bentoLangEn" },
   ];
 
   return (
@@ -103,8 +104,9 @@ const Bento = () => {
               >
                 {localTime || "—"}
               </p>
-              <p className="text-gray-light-3 mt-2">
-                📍 {getTranslation(language, "basedIn")} · GMT+1
+              <p className="flex items-center gap-1.5 text-gray-light-3 mt-2">
+                <FiMapPin className="text-indigo-light w-4 h-4 flex-none" />
+                {getTranslation(language, "basedIn")} · GMT+1
               </p>
             </div>
           </SpotlightCard>
@@ -151,10 +153,13 @@ const Bento = () => {
             <h3 className="font-mono text-sm uppercase tracking-widest text-gray-light-3 relative z-10">
               {getTranslation(language, "bentoLanguagesTitle")}
             </h3>
-            <div className="flex flex-col gap-2 relative z-10">
-              {spokenLanguages.map(({ flag, key }) => (
-                <p key={key} className="text-white">
-                  {flag} {getTranslation(language, key)}
+            <div className="flex flex-col gap-2.5 relative z-10">
+              {spokenLanguages.map(({ code, key }) => (
+                <p key={key} className="flex items-center gap-3 text-white">
+                  <span className="w-9 flex-none text-center py-0.5 rounded bg-gray-dark-2 border border-gray-dark-1 font-mono text-xs text-indigo-light">
+                    {code}
+                  </span>
+                  {getTranslation(language, key)}
                 </p>
               ))}
             </div>

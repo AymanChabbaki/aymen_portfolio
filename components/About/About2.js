@@ -50,7 +50,7 @@ const About2 = ({ clientHeight }) => {
         }}
       />
       <motion.div
-        className="absolute bottom-1/4 right-10 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl"
+        className="absolute bottom-1/4 right-10 w-60 h-60 bg-purple/10 rounded-full blur-3xl"
         animate={{
           x: [0, -40, 0],
           y: [0, 50, 0],

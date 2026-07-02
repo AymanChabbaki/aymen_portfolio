@@ -75,7 +75,7 @@ const Timeline = ({ items }) => {
     <div className="relative py-12" ref={containerRef}>
       {/* 3D Animated Timeline line with scroll-based reveal */}
       <motion.div 
-        className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-light via-purple-500 to-indigo-light origin-top"
+        className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-light via-purple to-indigo-light origin-top"
         style={{ 
           scaleY: lineScale,
           opacity: lineOpacity,
@@ -85,7 +85,7 @@ const Timeline = ({ items }) => {
       >
         {/* Animated glow effect */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-indigo-light via-purple-500 to-indigo-light blur-sm"
+          className="absolute inset-0 bg-gradient-to-b from-indigo-light via-purple to-indigo-light blur-sm"
           animate={{
             opacity: [0.3, 0.7, 0.3]
           }}

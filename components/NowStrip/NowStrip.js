@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { FiMapPin, FiZap, FiBriefcase } from "react-icons/fi";
+import { HiOutlineAcademicCap } from "react-icons/hi";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { getTranslation } from "../../locales/translations";
 
@@ -70,23 +72,29 @@ const NowStrip = () => {
       <span className="w-2 h-2 rounded-full bg-green pulse-dot flex-none" />
       {getTranslation(language, "availableForWork")}
     </span>,
-    <span key="location">
-      📍 {getTranslation(language, "basedIn")}
+    <span key="location" className="flex items-center gap-2">
+      <FiMapPin className="text-indigo-light w-4 h-4 flex-none" />
+      {getTranslation(language, "basedIn")}
       {localTime && ` · ${localTime}`}
     </span>,
     ...(commit
       ? [
-          <span key="commit">
-            ⚡ {getTranslation(language, "latestCommit")}:{" "}
+          <span key="commit" className="flex items-center gap-2">
+            <FiZap className="text-indigo-light w-4 h-4 flex-none" />
+            {getTranslation(language, "latestCommit")}:{" "}
             <span className="text-indigo-light">{commit.repo}</span> —{" "}
             {commit.message} · {relativeTime(commit.date, language)}
           </span>,
         ]
       : []),
-    <span key="study">
-      🎓 {getTranslation(language, "currentlyStudying")}
+    <span key="study" className="flex items-center gap-2">
+      <HiOutlineAcademicCap className="text-indigo-light w-4 h-4 flex-none" />
+      {getTranslation(language, "currentlyStudying")}
     </span>,
-    <span key="work">💼 {getTranslation(language, "buildingAt")}</span>,
+    <span key="work" className="flex items-center gap-2">
+      <FiBriefcase className="text-indigo-light w-4 h-4 flex-none" />
+      {getTranslation(language, "buildingAt")}
+    </span>,
   ];
 
   const track = items.map((item, i) => (
@@ -95,9 +103,10 @@ const NowStrip = () => {
       className="flex items-center gap-3 whitespace-nowrap px-8 font-mono text-sm text-gray-light-3"
     >
       {item}
-      <span className="text-indigo-light/60" aria-hidden="true">
-        ✦
-      </span>
+      <span
+        className="w-1.5 h-1.5 rounded-full bg-indigo-light/50 flex-none"
+        aria-hidden="true"
+      />
     </span>
   ));
 

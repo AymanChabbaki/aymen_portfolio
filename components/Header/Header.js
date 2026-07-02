@@ -91,7 +91,7 @@ const Header = ({ children }) => {
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-indigo-light to-purple-500 hover:from-purple-500 hover:to-indigo-light text-white rounded-lg transition-all duration-300 shadow-lg shadow-indigo-light/30 hover:shadow-indigo-light/50"
+            className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-indigo-light to-purple hover:from-purple hover:to-indigo-light text-white rounded-lg transition-all duration-300 shadow-lg shadow-indigo-light/30 hover:shadow-indigo-light/50"
           >
             {getTranslation(language, 'downloadResume')}
           </motion.button>

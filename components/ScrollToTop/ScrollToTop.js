@@ -37,7 +37,7 @@ const ScrollToTop = () => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
           onClick={scrollToTop}
-          className="fixed bottom-8 left-8 z-[9998] bg-gradient-to-r from-indigo-light to-purple-500 text-white p-4 rounded-full shadow-2xl hover:shadow-indigo-light/50 transition-all duration-300 cursor-pointer group"
+          className="fixed bottom-8 left-8 z-[9998] bg-gradient-to-r from-indigo-light to-purple text-white p-4 rounded-full shadow-2xl hover:shadow-indigo-light/50 transition-all duration-300 cursor-pointer group"
           whileHover={{ scale: 1.1, rotate: 360 }}
           whileTap={{ scale: 0.9 }}
           aria-label="Scroll to top"

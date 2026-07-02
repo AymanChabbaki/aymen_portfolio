@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, useAnimation } from 'framer-motion';
 import Image from 'next/image';
 import { MENULINKS } from '../../constants';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { HiHome, HiChip, HiViewGridAdd, HiBriefcase, HiMail, HiStar } from 'react-icons/hi';
+import { HiHome, HiChip, HiViewGridAdd, HiBriefcase, HiMail, HiStar, HiCursorClick } from 'react-icons/hi';
 
 /**
  * ScrollingChatbot Component
@@ -228,12 +228,15 @@ const ScrollingChatbot = () => {
         onClick={currentSection === 'feedback' ? handleFeedbackClick : undefined}
       >
         {/* Gradient background bubble */}
-        <div className={`bg-gradient-to-r from-indigo-light to-purple-500 text-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl max-w-md ${currentSection === 'feedback' ? 'hover:shadow-2xl hover:scale-105 transition-all duration-300' : ''}`}>
+        <div className={`bg-gradient-to-r from-indigo-light to-purple text-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl max-w-md ${currentSection === 'feedback' ? 'hover:shadow-2xl hover:scale-105 transition-all duration-300' : ''}`}>
           <div className="text-sm font-medium whitespace-normal">
               {/* Display message based on current section and language */}
               {messages[language]?.[currentSection] || messages.en[currentSection]}
               {currentSection === 'feedback' && (
-                <span className="block mt-1 text-xs opacity-80">👆 Click to jump to feedback!</span>
+                <span className="block mt-1 text-xs opacity-80">
+                  <HiCursorClick className="inline w-3.5 h-3.5 mr-1" />
+                  Click to jump to feedback!
+                </span>
               )}
           </div>
           </div>
@@ -266,16 +269,16 @@ const ScrollingChatbot = () => {
         >
           {/* ========== GLOW EFFECT ========== */}
           {/* Animated glow behind the chatbot for visual appeal */}
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-light/20 to-purple-500/20 rounded-full blur-xl animate-pulse pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-light/20 to-purple/20 rounded-full blur-xl animate-pulse pointer-events-none" />
           
-          {/* 3D chatbot image */}
-          <div className="relative w-20 h-20 rounded-full overflow-hidden bg-white border-2 border-indigo-light shadow-xl">
+          {/* 3D chatbot image — transparent PNG, no background */}
+          <div className="relative w-20 h-20 [filter:drop-shadow(0_6px_16px_rgba(112,0,255,0.45))]">
             <Image
               src={isIconHovered ? "/3d_2.png" : "/3d_1.png"}
               alt="Chatbot Assistant"
               width={80}
               height={80}
-              className="object-cover w-full h-full"
+              className="object-contain w-full h-full"
               draggable={false} // Prevent native image drag
               priority
             />
@@ -290,7 +293,7 @@ const ScrollingChatbot = () => {
             opacity: [0.7, 1, 0.7] 
           }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white pointer-events-none"
+          className="absolute -top-1 -right-1 w-3 h-3 bg-green rounded-full border-2 border-white pointer-events-none"
         />
     </motion.div>
   );

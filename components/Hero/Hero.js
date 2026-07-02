@@ -3,6 +3,7 @@ import Image from "next/image";
 import Typed from "typed.js";
 import gsap from "gsap";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { FiSun, FiSunset, FiMoon, FiMapPin, FiClock } from "react-icons/fi";
 import Button from "../Button/Button";
 import Profiles from "../Profiles/Profiles";
 import styles from "./Hero.module.scss";
@@ -13,11 +14,17 @@ import { getTranslation } from "../../locales/translations";
 const ORBIT_BADGES = ["react", "python", "tensorflow"];
 const STAR_COUNT = 18;
 
+const GREETING_ICONS = {
+  greetingMorning: FiSun,
+  greetingAfternoon: FiSunset,
+  greetingEvening: FiMoon,
+};
+
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return { key: "greetingMorning", emoji: "☀️" };
-  if (hour >= 12 && hour < 18) return { key: "greetingAfternoon", emoji: "🌆" };
-  return { key: "greetingEvening", emoji: "🌙" };
+  if (hour >= 5 && hour < 12) return "greetingMorning";
+  if (hour >= 12 && hour < 18) return "greetingAfternoon";
+  return "greetingEvening";
 };
 
 const Hero = () => {
@@ -27,6 +34,7 @@ const Hero = () => {
   const { language } = useLanguage();
   const [localTime, setLocalTime] = useState("");
   const [greeting] = useState(getGreeting);
+  const GreetingIcon = GREETING_ICONS[greeting];
 
   // Mouse parallax: layers drift at different depths as the cursor moves
   const mouseX = useMotionValue(0);
@@ -147,8 +155,9 @@ const Hero = () => {
       />
 
       <div className="flex flex-col pt-40 md:pt-0 select-none relative z-10">
-        <p className="staggered-reveal font-mono text-sm text-gray-light-3">
-          {greeting.emoji} {getTranslation(language, greeting.key)}
+        <p className="staggered-reveal flex items-center gap-2 font-mono text-sm text-gray-light-3">
+          <GreetingIcon className="text-indigo-light w-4 h-4" />
+          {getTranslation(language, greeting)}
         </p>
         <h5
           className={`${styles.intro} staggered-reveal font-mono font-medium text-indigo-light mt-2`}
@@ -176,10 +185,14 @@ const Hero = () => {
             <span className="w-2 h-2 rounded-full bg-green pulse-dot" />
             {getTranslation(language, "availableForWork")}
           </span>
-          <span>📍 {getTranslation(language, "basedIn")}</span>
+          <span className="flex items-center gap-1.5">
+            <FiMapPin className="text-indigo-light w-4 h-4" />
+            {getTranslation(language, "basedIn")}
+          </span>
           {localTime && (
-            <span suppressHydrationWarning>
-              🕐 {localTime} · {getTranslation(language, "localTime")}
+            <span className="flex items-center gap-1.5" suppressHydrationWarning>
+              <FiClock className="text-indigo-light w-4 h-4" />
+              {localTime} · {getTranslation(language, "localTime")}
             </span>
           )}
         </div>

@@ -29,7 +29,7 @@ const Feedback = () => {
       submitButton: "Submit Feedback",
       submitting: "Submitting...",
       noFeedbacks: "Be the first to leave feedback!",
-      recentFeedbacks: "What People Say",
+      recentFeedbacks: "Recent Feedback",
       successMessage: "Thank you for your feedback!",
       errorMessage: "Failed to submit feedback. Please try again.",
       nameRequired: "Please enter your name",
@@ -45,7 +45,7 @@ const Feedback = () => {
       submitButton: "Envoyer",
       submitting: "Envoi en cours...",
       noFeedbacks: "Soyez le premier à laisser un commentaire!",
-      recentFeedbacks: "Témoignages",
+      recentFeedbacks: "Commentaires récents",
       successMessage: "Merci pour votre commentaire!",
       errorMessage: "Échec de l'envoi. Veuillez réessayer.",
       nameRequired: "Veuillez entrer votre nom",
@@ -298,7 +298,7 @@ const Feedback = () => {
           className={styles.feedbacksList}
         >
           <h3 className={styles.feedbacksTitle}>
-            ✨ {t.recentFeedbacks}
+            {t.recentFeedbacks}
           </h3>
 
           {fetchingFeedbacks ? (

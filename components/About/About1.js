@@ -64,7 +64,7 @@ const About1 = ({ clientHeight }) => {
       />
       <motion.div
         style={{ y: useTransform(scrollYProgress, [0, 1], [-100, 100]) }}
-        className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
+        className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple/10 rounded-full blur-3xl"
       />
 
       <div

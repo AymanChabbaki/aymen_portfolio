@@ -101,7 +101,7 @@ const Work = ({ isDesktop }) => {
               whileTap={{ scale: 0.95 }}
               className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
                 activeView === "all"
-                  ? "bg-gradient-to-r from-indigo-light to-purple-500 text-white shadow-lg shadow-indigo-light/50"
+                  ? "bg-gradient-to-r from-indigo-light to-purple text-white shadow-lg shadow-indigo-light/50"
                   : "bg-gray-dark-4 text-gray-light-3 hover:bg-gray-dark-3"
               }`}
             >
@@ -113,7 +113,7 @@ const Work = ({ isDesktop }) => {
               whileTap={{ scale: 0.95 }}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
                 activeView === "education"
-                  ? "bg-gradient-to-r from-indigo-light to-purple-500 text-white shadow-lg shadow-indigo-light/50"
+                  ? "bg-gradient-to-r from-indigo-light to-purple text-white shadow-lg shadow-indigo-light/50"
                   : "bg-gray-dark-4 text-gray-light-3 hover:bg-gray-dark-3"
               }`}
             >
@@ -128,7 +128,7 @@ const Work = ({ isDesktop }) => {
               whileTap={{ scale: 0.95 }}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
                 activeView === "experience"
-                  ? "bg-gradient-to-r from-indigo-light to-purple-500 text-white shadow-lg shadow-indigo-light/50"
+                  ? "bg-gradient-to-r from-indigo-light to-purple text-white shadow-lg shadow-indigo-light/50"
                   : "bg-gray-dark-4 text-gray-light-3 hover:bg-gray-dark-3"
               }`}
             >
