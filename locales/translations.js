@@ -57,6 +57,7 @@ export const translations = {
     projectUltexWorkflow: "Plateforme d'automatisation des workflows Ultex",
     projectUltexWorkflowModal: "Système multi-agents (MAS) développé pour Ultex : un backend FastAPI orchestre un agent conversationnel LangGraph connecté à WhatsApp pour qualifier automatiquement les demandes de sourcing — détection de langue (darija/français), transcription vocale via Groq Whisper, extraction progressive des informations (Incoterm, quantités, spécifications...) et génération de dossiers. PostgreSQL et Redis assurent la persistance et le cache de session, avec un dashboard React pour le suivi et les relances manuelles.",
     projectCommentsModerator: "SaaS de modération automatique des commentaires",
+    projectTox21Portal: "Prédiction de toxicité moléculaire par IA (SMILES)",
 
     // Typed Strings
     typedString1: "Développeur Full Stack & AI Engineer",
@@ -252,6 +253,7 @@ export const translations = {
     projectUltexWorkflow: "Ultex workflow automation platform",
     projectUltexWorkflowModal: "A multi-agent system (MAS) built for Ultex: a FastAPI backend orchestrates a LangGraph conversational agent connected to WhatsApp to automatically qualify sourcing requests — language detection (Darija/French), voice transcription via Groq Whisper, progressive field extraction (Incoterm, quantities, specs...) and dossier generation. PostgreSQL and Redis handle persistence and session caching, with a React dashboard for tracking and manual follow-ups.",
     projectCommentsModerator: "SaaS for automated comment moderation",
+    projectTox21Portal: "AI-powered molecular toxicity prediction (SMILES)",
 
     // Typed Strings
     typedString1: "Full Stack Developer & AI Engineer",
