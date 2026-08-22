@@ -26,6 +26,12 @@ import electronic from "../../public/projects/electronic.png";
 import rec from "../../public/projects/rec.png";
 import ancestry from "../../public/projects/ancetry.png";
 import blindWeather from "../../public/projects/blind.png";
+import beeHouse from "../../public/projects/bee-house.png";
+import iya from "../../public/projects/iya.png";
+import youthCapital from "../../public/projects/youth-capital.png";
+import commentsModerator from "../../public/projects/comments-moderator.png";
+import ultexWorkflow from "../../public/projects/ultex-workflow.png";
+import leRacine from "../../public/projects/le-racine.png";
 
 export const PROJECT_IMAGES = {
   // Old projects (keeping for reference)
@@ -60,5 +66,11 @@ export const PROJECT_IMAGES = {
   "my-electronic-shop": electronic,
   "ancestry-prediction": ancestry,
   "blind-weather-prediction": blindWeather,
+  "bee-house": beeHouse,
+  "iya": iya,
+  "youth-capital": youthCapital,
+  "comments-moderator": commentsModerator,
+  "ultex-workflow": ultexWorkflow,
+  "le-racine": leRacine,
 };
 

@@ -126,6 +126,47 @@ export const SKILLS = {
 };
 
 export const PROJECTS = [
+  {
+    name: "Bee House Casablanca",
+    imageKey: "bee-house",
+    descriptionKey: "projectBeeHouse",
+    gradient: ["#f7971e", "#ffd200"],
+    url: "https://beehouse.techermanos.org/",
+    tech: ["nextjs", "react", "tailwindcss"],
+  },
+  {
+    name: "Istiqlal Youth Academy",
+    imageKey: "iya",
+    descriptionKey: "projectIstiqlalYouthAcademy",
+    gradient: ["#ec008c", "#1a1a2e"],
+    url: "https://iya-istiqlal-youth-academy.vercel.app/",
+    tech: ["nextjs", "react", "tailwindcss"],
+  },
+  {
+    name: "Youth Capital",
+    imageKey: "youth-capital",
+    descriptionKey: "projectYouthCapital",
+    gradient: ["#1e3c72", "#c9a24b"],
+    url: "https://www.youthcapital.org/",
+    tech: ["nextjs", "react", "tailwindcss"],
+  },
+  {
+    name: "Ultex Workflow",
+    imageKey: "ultex-workflow",
+    descriptionKey: "projectUltexWorkflow",
+    modalKey: "projectUltexWorkflowModal",
+    gradient: ["#5b0ea3", "#2c0f57"],
+    modal: true,
+    tech: ["react", "nodejs", "mongodb"],
+  },
+  {
+    name: "Comments Moderator",
+    imageKey: "comments-moderator",
+    descriptionKey: "projectCommentsModerator",
+    gradient: ["#6a1b1b", "#c0392b"],
+    url: "https://comments.techermanos.org/login",
+    tech: ["nextjs", "react", "nodejs"],
+  },
     {
     name: "AI & DEV Community",
     imageKey: "ai-dev-community",

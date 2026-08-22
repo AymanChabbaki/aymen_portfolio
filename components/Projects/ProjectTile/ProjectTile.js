@@ -1,6 +1,6 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import styles from "./ProjectTile.module.scss";
 import { PROJECT_IMAGES } from "../images";
 import { useLanguage } from "../../../contexts/LanguageContext";
@@ -9,11 +9,13 @@ import { getTranslation } from "../../../locales/translations";
 const ProjectTile = ({ project, classes, isDesktop }) => {
   const projectCard = useRef(null);
   const { language } = useLanguage();
+  const [showModal, setShowModal] = useState(false);
 
-  const { name, imageKey, descriptionKey, url, tech } = project;
+  const { name, imageKey, descriptionKey, modalKey, url, tech, modal: isModal } = project;
 
   const image = PROJECT_IMAGES[imageKey];
   const description = getTranslation(language, descriptionKey);
+  const modalDescription = modalKey ? getTranslation(language, modalKey) : null;
 
   let additionalClasses = "";
   if (classes) {
@@ -29,9 +31,21 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
     card.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
   }, []);
 
+  const Wrapper = isModal ? motion.div : motion.a;
+  const interactionProps = isModal
+    ? {
+        role: "button",
+        tabIndex: 0,
+        onClick: () => setShowModal(true),
+        onKeyDown: (e) => {
+          if (e.key === "Enter" || e.key === " ") setShowModal(true);
+        },
+      }
+    : { href: url, target: "_blank", rel: "noreferrer" };
+
   return (
-    <motion.a
-      href={url}
+    <>
+    <Wrapper
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
@@ -41,14 +55,15 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
         transition: { duration: 0.3 },
       }}
       onMouseMove={handleMouseMove}
-      className={`overflow-hidden rounded-3xl snap-start link group ${additionalClasses}`}
-      target="_blank"
-      rel="noreferrer"
+      className={`overflow-hidden rounded-3xl snap-start link group ${
+        isModal ? "cursor-pointer" : ""
+      } ${additionalClasses}`}
       style={{
         maxWidth: isDesktop ? "calc(100vw - 2rem)" : "calc(100vw - 4rem)",
         flex: "1 0 auto",
         WebkitMaskImage: "-webkit-radial-gradient(white, black)"
       }}
+      {...interactionProps}
     >
       <div
         ref={projectCard}
@@ -97,7 +112,56 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
           </div>
         </div>
       </div>
-    </motion.a>
+    </Wrapper>
+    {isModal && (
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowModal(false)}
+          >
+            <motion.div
+              className="bg-neutral-900 border border-white/10 rounded-2xl max-w-md w-full p-6 relative"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                aria-label="Close"
+                className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+                onClick={() => setShowModal(false)}
+              >
+                ✕
+              </button>
+              <h3 className="text-xl font-semibold text-white mb-3 pr-8">
+                {name}
+              </h3>
+              <p className="text-white/80 leading-relaxed">
+                {modalDescription}
+              </p>
+              <div className="flex flex-row gap-3 flex-wrap mt-5">
+                {tech.map((el) => (
+                  <Image
+                    className="bg-white/80 rounded-lg p-1 shadow-md"
+                    src={`/projects/tech/${el}.svg`}
+                    alt={el}
+                    height={32}
+                    width={32}
+                    key={el}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    )}
+    </>
   );
 };
 

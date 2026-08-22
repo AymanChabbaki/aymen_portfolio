@@ -51,7 +51,13 @@ export const translations = {
     projectBlindWeatherPrediction: "Prédiction météo vocale pour aveugles",
     projectAncestryPrediction: "Prédiction d'origine ethnique par IA",
     projectIptv: "Site IPTV avec streaming fluide",
-    
+    projectBeeHouse: "Site vitrine pour café, restaurant & glacier",
+    projectIstiqlalYouthAcademy: "Plateforme de l'académie de jeunesse du parti Istiqlal",
+    projectYouthCapital: "Simulation de gouvernance civique pour les jeunes",
+    projectUltexWorkflow: "Plateforme d'automatisation des workflows Ultex",
+    projectUltexWorkflowModal: "Système multi-agents (MAS) développé pour Ultex : un backend FastAPI orchestre un agent conversationnel LangGraph connecté à WhatsApp pour qualifier automatiquement les demandes de sourcing — détection de langue (darija/français), transcription vocale via Groq Whisper, extraction progressive des informations (Incoterm, quantités, spécifications...) et génération de dossiers. PostgreSQL et Redis assurent la persistance et le cache de session, avec un dashboard React pour le suivi et les relances manuelles.",
+    projectCommentsModerator: "SaaS de modération automatique des commentaires",
+
     // Typed Strings
     typedString1: "Développeur Full Stack & AI Engineer",
     typedString2: "Je crée des expériences numériques intelligentes",
@@ -240,7 +246,13 @@ export const translations = {
     projectBlindWeatherPrediction: "Voice weather prediction for blind people",
     projectAncestryPrediction: "AI-powered ancestry prediction",
     projectIptv: "IPTV website with smooth streaming",
-    
+    projectBeeHouse: "Showcase website for a café, restaurant & ice cream parlor",
+    projectIstiqlalYouthAcademy: "Youth academy platform for the Istiqlal Party",
+    projectYouthCapital: "Civic governance simulation platform for youth",
+    projectUltexWorkflow: "Ultex workflow automation platform",
+    projectUltexWorkflowModal: "A multi-agent system (MAS) built for Ultex: a FastAPI backend orchestrates a LangGraph conversational agent connected to WhatsApp to automatically qualify sourcing requests — language detection (Darija/French), voice transcription via Groq Whisper, progressive field extraction (Incoterm, quantities, specs...) and dossier generation. PostgreSQL and Redis handle persistence and session caching, with a React dashboard for tracking and manual follow-ups.",
+    projectCommentsModerator: "SaaS for automated comment moderation",
+
     // Typed Strings
     typedString1: "Full Stack Developer & AI Engineer",
     typedString2: "I build intelligent digital experiences",
