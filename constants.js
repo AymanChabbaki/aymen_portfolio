@@ -127,6 +127,23 @@ export const SKILLS = {
 
 export const PROJECTS = [
   {
+    name: "Ultex Workflow",
+    imageKey: "ultex-workflow",
+    descriptionKey: "projectUltexWorkflow",
+    modalKey: "projectUltexWorkflowModal",
+    gradient: ["#5b0ea3", "#2c0f57"],
+    modal: true,
+    tech: ["react", "nodejs", "mongodb"],
+  },
+  {
+    name: "Tox21 Portal",
+    imageKey: "tox21-portal",
+    descriptionKey: "projectTox21Portal",
+    gradient: ["#6d28d9", "#4f46e5"],
+    url: "https://toxpredictor.techermanos.org/",
+    tech: ["python", "flask", "react", "machine-learning"],
+  },
+  {
     name: "Bee House Casablanca",
     imageKey: "bee-house",
     descriptionKey: "projectBeeHouse",
@@ -149,15 +166,6 @@ export const PROJECTS = [
     gradient: ["#1e3c72", "#c9a24b"],
     url: "https://www.youthcapital.org/",
     tech: ["nextjs", "react", "tailwindcss"],
-  },
-  {
-    name: "Ultex Workflow",
-    imageKey: "ultex-workflow",
-    descriptionKey: "projectUltexWorkflow",
-    modalKey: "projectUltexWorkflowModal",
-    gradient: ["#5b0ea3", "#2c0f57"],
-    modal: true,
-    tech: ["react", "nodejs", "mongodb"],
   },
   {
     name: "Comments Moderator",

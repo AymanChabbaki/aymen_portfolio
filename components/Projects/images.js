@@ -32,6 +32,7 @@ import youthCapital from "../../public/projects/youth-capital.png";
 import commentsModerator from "../../public/projects/comments-moderator.png";
 import ultexWorkflow from "../../public/projects/ultex-workflow.png";
 import leRacine from "../../public/projects/le-racine.png";
+import tox21Portal from "../../public/projects/tox21-portal.png";
 
 export const PROJECT_IMAGES = {
   // Old projects (keeping for reference)
@@ -72,5 +73,6 @@ export const PROJECT_IMAGES = {
   "comments-moderator": commentsModerator,
   "ultex-workflow": ultexWorkflow,
   "le-racine": leRacine,
+  "tox21-portal": tox21Portal,
 };
 
