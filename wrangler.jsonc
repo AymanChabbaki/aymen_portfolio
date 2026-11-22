@@ -17,6 +17,12 @@
   "images": {
     "binding": "IMAGES"
   },
+  "routes": [
+    {
+      "pattern": "chabbaki.techermanos.org",
+      "custom_domain": true
+    }
+  ],
   "observability": {
     "enabled": true
   }
