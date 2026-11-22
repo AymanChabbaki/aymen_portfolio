@@ -39,3 +39,8 @@ env.local
 *.sql
 *.md
 
+
+# Cloudflare / OpenNext
+.open-next
+.wrangler
+.dev.vars

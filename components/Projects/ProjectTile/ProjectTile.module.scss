@@ -50,3 +50,135 @@
 .techIcons {
   transform: rotate(-22.5deg) translateZ(3rem);
 }
+
+
+/* ---------- Enhanced card design ---------- */
+
+.projectImage {
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease !important;
+}
+
+:global(.group):hover .projectImage {
+  transform: scale(1.06) !important;
+  filter: saturate(1.1);
+}
+
+.scrim {
+  background: linear-gradient(
+    to top,
+    rgba(5, 5, 10, 0.92) 0%,
+    rgba(5, 5, 10, 0.55) 28%,
+    rgba(5, 5, 10, 0) 55%
+  );
+}
+
+.spotlight {
+  background: radial-gradient(
+    500px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in srgb, var(--accent-from) 35%, transparent),
+    transparent 65%
+  );
+}
+
+.accentBorder {
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0.1));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+:global(.group):hover .accentBorder {
+  padding: 1.5px;
+  background: linear-gradient(135deg, var(--accent-from), transparent 45%, var(--accent-to));
+}
+
+.glassChip {
+  display: inline-flex;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(15, 15, 25, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.actionChip {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+:global(.group):hover .actionChip {
+  opacity: 1;
+  transform: translateY(0);
+  background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+  border-color: transparent;
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 0.35s ease;
+}
+
+:global(.group):hover .arrow {
+  transform: translate(2px, -2px);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.accentBar {
+  width: 0.3rem;
+  align-self: stretch;
+  min-height: 1.75rem;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, var(--accent-from), var(--accent-to));
+  box-shadow: 0 0 16px var(--accent-from);
+}
+
+.reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: grid-template-rows 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+
+  > div {
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+:global(.group):hover .reveal,
+:global(.group):focus-visible .reveal {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Touch devices have no hover: show details by default */
+@media (hover: none) {
+  .reveal {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: none;
+  }
+  .actionChip {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projectImage,
+  .reveal,
+  .actionChip,
+  .arrow {
+    transition: none !important;
+  }
+}

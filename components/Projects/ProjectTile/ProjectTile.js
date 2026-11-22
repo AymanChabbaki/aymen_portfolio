@@ -6,12 +6,15 @@ import { PROJECT_IMAGES } from "../images";
 import { useLanguage } from "../../../contexts/LanguageContext";
 import { getTranslation } from "../../../locales/translations";
 
-const ProjectTile = ({ project, classes, isDesktop }) => {
+const ProjectTile = ({ project, classes, isDesktop, index = 0, total = 0 }) => {
   const projectCard = useRef(null);
   const { language } = useLanguage();
   const [showModal, setShowModal] = useState(false);
 
-  const { name, imageKey, descriptionKey, modalKey, url, tech, modal: isModal } = project;
+  const { name, imageKey, descriptionKey, modalKey, url, tech, modal: isModal, gradient } = project;
+  const [accentFrom, accentTo] = gradient || ["#8b31ff", "#7000ff"];
+  const indexLabel = String(index + 1).padStart(2, "0");
+  const totalLabel = String(total).padStart(2, "0");
 
   const image = PROJECT_IMAGES[imageKey];
   const description = getTranslation(language, descriptionKey);
@@ -67,11 +70,13 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
     >
       <div
         ref={projectCard}
-        className={`${styles.projectTile} rounded-3xl relative flex flex-col justify-end max-w-full p-0 border border-transparent group-hover:border-indigo-light/40 transition-colors duration-300`}
+        className={`${styles.projectTile} rounded-3xl relative flex flex-col justify-end max-w-full p-0`}
         style={{
           background: "none",
           height: "100%",
-          width: "100%"
+          width: "100%",
+          "--accent-from": accentFrom,
+          "--accent-to": accentTo,
         }}
       >
         {image && (
@@ -84,31 +89,60 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
             style={{ position: "absolute", inset: 0, zIndex: 0, borderRadius: "1.5rem", objectFit: "cover" }}
           />
         )}
-        {/* Overlay for dark smoke, appears only on hover */}
-        <div className="absolute inset-0 z-10 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
-        {/* Spotlight glow that follows the cursor */}
-        <div
-          className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(500px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(139, 49, 255, 0.25), transparent 65%)",
-          }}
-        />
-        <div className="relative z-20 flex flex-col justify-end h-full w-full p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-          <h2 className="text-lg tracking-wide font-semibold text-white drop-shadow-md bg-black/70 rounded-xl px-4 py-2 mb-4 w-fit self-start shadow-lg">
-            {description}
-          </h2>
-          <div className="flex flex-row gap-3 flex-wrap">
-            {tech.map((el, i) => (
-              <Image
-                className="bg-white/80 rounded-lg p-1 shadow-md"
-                src={`/projects/tech/${el}.svg`}
-                alt={el}
-                height={32}
-                width={32}
-                key={el}
-              />
-            ))}
+
+        {/* Permanent bottom scrim so the title is always legible */}
+        <div className={`${styles.scrim} absolute inset-0 z-10 rounded-3xl pointer-events-none`} />
+        {/* Darker veil on hover */}
+        <div className="absolute inset-0 z-10 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl pointer-events-none" />
+        {/* Spotlight glow tinted with the project's own accent */}
+        <div className={`${styles.spotlight} absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl pointer-events-none`} />
+        {/* Accent gradient border */}
+        <div className={`${styles.accentBorder} absolute inset-0 z-30 rounded-3xl pointer-events-none`} />
+
+        {/* Top row: index + action chip */}
+        <div className="absolute top-0 left-0 right-0 z-20 flex items-start justify-between p-5 pointer-events-none">
+          <span className={`${styles.glassChip} font-mono text-xs tracking-widest text-white/90`}>
+            {indexLabel}
+            <span className="text-white/40">&nbsp;/ {totalLabel}</span>
+          </span>
+          <span
+            className={`${styles.glassChip} ${styles.actionChip} flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-white`}
+          >
+            {isModal ? "Details" : "Visit"}
+            <span className={styles.arrow} aria-hidden="true">
+              {isModal ? "+" : "↗"}
+            </span>
+          </span>
+        </div>
+
+        {/* Bottom content: title always visible, details slide up on hover */}
+        <div className="relative z-20 flex flex-col justify-end h-full w-full p-6 pointer-events-none">
+          <div className={styles.titleRow}>
+            <span className={styles.accentBar} aria-hidden="true" />
+            <h3 className="text-2xl md:text-3xl font-semibold text-white tracking-tight drop-shadow-lg">
+              {name}
+            </h3>
+          </div>
+          <div className={styles.reveal}>
+            <div>
+              <p className="text-sm md:text-base text-white/85 leading-relaxed max-w-2xl mt-3">
+                {description}
+              </p>
+              <div className="flex flex-row gap-2 flex-wrap mt-4">
+                {tech.map((el) => (
+                  <span key={el} className={`${styles.glassChip} items-center gap-2 !py-1 !pl-1 !pr-3`}>
+                    <Image
+                      className="bg-white/90 rounded-md p-0.5"
+                      src={`/projects/tech/${el}.svg`}
+                      alt=""
+                      height={22}
+                      width={22}
+                    />
+                    <span className="text-xs text-white/90 capitalize">{el}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -124,12 +158,16 @@ const ProjectTile = ({ project, classes, isDesktop }) => {
             onClick={() => setShowModal(false)}
           >
             <motion.div
-              className="bg-neutral-900 border border-white/10 rounded-2xl max-w-md w-full p-6 relative"
+              className="bg-neutral-900 border border-white/10 rounded-2xl max-w-md w-full p-6 relative overflow-hidden"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
+              <div
+                className="absolute top-0 left-0 right-0 h-1"
+                style={{ background: `linear-gradient(90deg, ${accentFrom}, ${accentTo})` }}
+              />
               <button
                 type="button"
                 aria-label="Close"
